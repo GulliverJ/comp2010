@@ -54,6 +54,8 @@ Type = "bool" | "int" | "char" | "rat" | "top" | "float"
 Dictionary = "dict<" {Type} "," {Type} ">"
 Sequence = "seq<"{Type}">"
 
+SequenceContent = [[0-9,]*]
+
 
 %%
 
@@ -98,6 +100,8 @@ Sequence = "seq<"{Type}">"
 
 	{Sequence} { System.out.println(yytext()); }
 
+	{SequenceContent} { System.out.println(yytext()); }
+
 	{BooleanConstant} { System.out.println("BOOLCONST"); }
 
 	{Character} { System.out.println(yytext()); }
@@ -114,4 +118,5 @@ Sequence = "seq<"{Type}">"
 
 	{Comment} { /* IGNORE COMMENTS */ }
 }
+
 //[^] {throw new Error("Illegal character <" + yytext() + ">");}
