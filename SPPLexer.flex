@@ -1,8 +1,12 @@
 // COMP2010 Group 9
 // Coursework 1
 
+<<<<<<< HEAD
 
 //ed
+=======
+//hey
+>>>>>>> 1f621f5b1861bdfef509d4044d3d4c0cc8f92c39
 
 // Version 0.1 - Basic lexer which recognises a very small subset of the final design
 //	           - Should return successful parse on, for example, "a : int := 1 + 2;"
