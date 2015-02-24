@@ -39,19 +39,20 @@
 /* REGULAR EXPRESSIONS */
 LineTerminator = \r|\n|\r\n
 WhiteSpace = {LineTerminator} | [ \t\f]
-Integer = 0 | [1-9][0-9]*
+Integer = 0 | [1-9][0-9]* | {NegativeInteger}
 Identifier = [:jletter:] [:jletterdigit:]*
 InputCharacter = [^\r\n]
-BooleanConstant = T | F
-Char = "'" [A-Z] "'" | "'" [a-z] "'"
+BooleanConstant = "T" | "F"
+Character = "'" [A-Z] "'" | "'" [a-z] "'"
+NegativeInteger = "-"[1-9][0-9]*
 
 TraditionalComment = "/#" [^#] "#/" | "/#" "#"+ "/"
 EndOfLineComment = "#" {InputCharacter}* {LineTerminator}?
 Comment = {TraditionalComment} | {EndOfLineComment}
 
-Keyword = "bool" | "int" | "char" | "rat" | "top" | "float"
-Dictionary = "dict<"{Keyword}","{Keyword}">"
-Sequence = "seq<"{Keyword}">"
+Type = "bool" | "int" | "char" | "rat" | "top" | "float"
+Dictionary = "dict<" {Type} "," {Type} ">"
+Sequence = "seq<"{Type}">"
 
 
 %%
@@ -59,39 +60,58 @@ Sequence = "seq<"{Keyword}">"
 /* LEXICAL RULES */
 
 /* KEYWORDS */
-<YYINITIAL> "char" { System.out.println("Found a char at: " + yyline + " " + yycolumn); }
-<YYINITIAL> "bool" { System.out.println("Found a bool at: " + yyline + " " + yycolumn); }
-<YYINITIAL> "int"  { System.out.println("Found an int at: " + yyline + " " + yycolumn); }
-<YYINITIAL> "rat"  { System.out.println("Found a rational at: " + yyline + " " + yycolumn); }
-<YYINITIAL> "float" { System.out.println("Found a float at: " + yyline + " " + yycolumn); }
-<YYINITIAL> "top" { System.out.println("Found a top at: " + yyline + " " + yycolumn); }
+<YYINITIAL> "char" { System.out.println("CHAR"); }
+<YYINITIAL> "bool" { System.out.println("BOOL"); }
+<YYINITIAL> "int"  { System.out.println("INT"); }
+<YYINITIAL> "rat"  { System.out.println("RAT"); }
+<YYINITIAL> "float" { System.out.println("FLOAT"); }
+<YYINITIAL> "top" { System.out.println("TOP"); }
+<YYINITIAL> "if"  { System.out.println("IF"); }
+<YYINITIAL> "then"  { System.out.println("THEN"); }
+<YYINITIAL> "fi"  { System.out.println("FI"); }
+<YYINITIAL> "return"  { System.out.println("RETURN"); }
 
 //FDEF prints FUNCTION
 
 <YYINITIAL> {
 	/* Operators */
-	"/"  { System.out.println("Found a / at: " + yyline + " " + yycolumn); }
-	"*"  { System.out.println("Found a * at: " + yyline + " " + yycolumn); }
-	"-"  { System.out.println("Found a - at: " + yyline + " " + yycolumn); }
-	"+"  { System.out.println("Found a + at: " + yyline + " " + yycolumn); }
-	":=" { return symbol(sym.ASSIGN); }
+	"/"  { System.out.println("DIVIDE"); }
+	"*"  { System.out.println("TIMES"); }
+	"-"  { System.out.println("MINUS"); }
+	"+"  { System.out.println("PLUS"); }
+	":=" { System.out.println("ASSIGN"); }
+	"="  { System.out.println("EQ"); }
 
 	/* Separators */
-	";" { System.out.println("Found a ; at: " + yyline + " " + yycolumn); }
-	":"	{ return symbol(sym.COLON); }
-	"(" { System.out.println("Found a ( at: " + yyline + " " + yycolumn); }
-	")" { System.out.println("Found a ) at: " + yyline + " " + yycolumn); }
+	";" { System.out.println("SEMI"); }
+	":"	{ System.out.println("TYPE"); }
+	"(" { System.out.println("LPAREN"); }
+	")" { System.out.println("RPAREN"); }
+	"{" { System.out.println(yytext()); }
+	"}" { System.out.println(yytext()); }
 
-	{Integer} { return symbol(sym.NUM, new Integer(yytext())); }
+	"fdef" { System.out.println("FUNCTION"); }
 
-	{Identifier} { return symbol(sym.ID, new Integer(1)); }
+	"main" { System.out.println("MAIN"); }
 
-	{Dictionary} { System.out.println("Found a Dictionary at: " + yyline + " " + yycolumn); }
+	{Dictionary} { System.out.println(yytext()); }
 
-	{Sequence} { System.out.println("Found a Sequence at: " + yyline + " " + yycolumn); }
+	{Sequence} { System.out.println(yytext()); }
 
-	{WhiteSpace} {}
+	{BooleanConstant} { System.out.println("BOOLCONST"); }
 
-	{Comment} {}
+	{Character} { System.out.println(yytext()); }
+
+	//Use this when actually returning Integers.
+	//return symbol(sym.NUM, new Integer(yytext()));
+	{Integer} { System.out.println(yytext()); }
+
+	//Use this when actually returning an identifier.
+	//return symbol(sym.ID, new Integer(1));
+	{Identifier} { System.out.println("ID(" + yytext() + ")"); }
+
+	{WhiteSpace} { /* IGNORE WHITESPACE */ }
+
+	{Comment} { /* IGNORE COMMENTS */ }
 }
 //[^] {throw new Error("Illegal character <" + yytext() + ">");}
