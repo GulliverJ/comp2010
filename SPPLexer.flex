@@ -98,24 +98,27 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 <YYINITIAL> "in"      { System.out.print("IN "); }
 <YYINITIAL> "return"  { System.out.print("RETURN "); }
 
-//FDEF prints FUNCTION
 
 <YYINITIAL> {
 	/* Operators */
-	"/"  { System.out.print("DIVIDE "); }
-	"*"  { System.out.print("TIMES "); }
-	"-"  { System.out.print("MINUS "); }
-	"+"  { System.out.print("PLUS "); }
-	":=" { System.out.print("ASSIGN "); }
-	"="  { System.out.print("EQ "); }
-	"::" { System.out.print("CONCAT "); }
-	"!=" { System.out.print("NOTEQ"); }
-	"<"  { System.out.print("LTHAN "); }
-	"<=" { System.out.print("LTEQ "); }
-	">"  { System.out.print("GTHAN "); }
-	">=" { System.out.print("GTEQ"); }
-	"&&" { System.out.print("AND "); }
-	"||" { System.out.print("OR "); }
+	"/"   { System.out.print("DIVIDE "); }
+	"*"   { System.out.print("TIMES "); }
+	"-"   { System.out.print("MINUS "); }
+	"+"   { System.out.print("PLUS "); }
+	"^"   { System.out.print("POW ");}
+
+	":="  { System.out.print("ASSIGN "); }
+	"="   { System.out.print("EQ "); }
+	"::"  { System.out.print("CONCAT "); }
+	"!="  { System.out.print("NOTEQ"); }
+	"<"   { System.out.print("LTHAN "); }
+	"<="  { System.out.print("LTEQ "); }
+	"&&"  { System.out.print("AND "); }
+	"||"  { System.out.print("OR "); }
+	"!"   { System.out.print("NOT "); }
+	"=>"  { System.out.Print("IMPLIES "); }
+	"\""  { yybegin(STRING);}
+	"len" { System.out.print("LEN "); }
 
 
 	/* Separators */
@@ -160,10 +163,9 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 
 //TODO
 
- * declaration list?
- * Floats with non-num characters
+/* How are user-defined types dealt with, and where?
+ * Floats with non-num characters (1.23a4)
  * State for seq
- * Escape characters
- *
- *
+ * State for dict
+ * Escape characters in a sequence of chars (string)
  */
