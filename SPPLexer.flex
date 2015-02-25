@@ -1,12 +1,8 @@
-// COMP2010
-// Group 10
-// Coursework 1
+// Version 0.1 - Basic lexer which recognises a very small subset of the final design
+//	           - Should return successful parse on, for example, "a : int := 1 + 2;"
 
-// Version 0.2 - Covers majority of basic syntax; lots left to do (dict and seq need work etc.)
-//             - Some minor bug fixes
-
-
-import java_cup.runtime.*;
+/* NEEDED FOR PARSER INTERFACING */
+//import java_cup.runtime.*;
 
 %%
 
@@ -16,16 +12,18 @@ import java_cup.runtime.*;
 //Use unicode.
 %unicode
 
-//Toggle CUP compatability.
-%cup
+//Turns on CUP compatability.
+//%cup
 
 //Allows accessing of line and column values of current token.
 %line
 %column
 
 //Used when not interfacing with CUP.
-//%standalone
+%standalone
 
+/* USED FOR GENERATING SYMBOLS USED BY THE PARSER */
+/*
 %{
 	private Symbol symbol(int type) {
 		return new Symbol(type, yyline, yycolumn);
@@ -35,6 +33,7 @@ import java_cup.runtime.*;
 		return new Symbol(type, yyline, yycolumn, value);
 	}
 %}
+*/
 
 /* REGULAR EXPRESSIONS */
 LineTerminator   = \r|\n|\r\n
@@ -74,71 +73,96 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 /* LEXICAL RULES */
 
 /* Keywords */
-<YYINITIAL> "char"    { return symbol(sym.CHAR); }
-<YYINITIAL> "bool"    { return symbol(sym.BOOL); }
-<YYINITIAL> "int"     { return symbol(sym.INT); }
-<YYINITIAL> "rat"     { return symbol(sym.RAT); }
-<YYINITIAL> "float"   { return symbol(sym.FLOAT); }
-<YYINITIAL> "top"     { return symbol(sym.TOP); }
-<YYINITIAL> "print"   { return symbol(sym.PRINT); }
+<YYINITIAL> "char"    { System.out.print("CHAR "); }
+<YYINITIAL> "bool"    { System.out.print("BOOL "); }
+<YYINITIAL> "int"     { System.out.print("INT "); }
+<YYINITIAL> "rat"     { System.out.print("RAT "); }
+<YYINITIAL> "float"   { System.out.print("FLOAT "); }
+<YYINITIAL> "top"     { System.out.print("TOP "); }
+<YYINITIAL> "print"   { System.out.print("PRINT "); }
 
 /* Control Flow */
-<YYINITIAL> "if"      { return symbol(sym.IF); }
-<YYINITIAL> "then"    { return symbol(sym.THEN); }
-<YYINITIAL> "else"    { return symbol(sym.ELSE); }
-<YYINITIAL> "fi"      { return symbol(sym.FI); }
-<YYINITIAL> "while"   { return symbol(sym.WHILE); }
-<YYINITIAL> "do"      { return symbol(sym.DO); }
-<YYINITIAL> "od"      { return symbol(sym.OD); }
-<YYINITIAL> "forall"  { return symbol(sym.FORALL); }
-<YYINITIAL> "in"      { return symbol(sym.IN); }
-<YYINITIAL> "return"  { return symbol(sym.RETURN); }
+<YYINITIAL> "if"      { System.out.print("IF "); }
+<YYINITIAL> "then"    { System.out.print("THEN "); }
+<YYINITIAL> "else"    { System.out.print("THEN "); }
+<YYINITIAL> "fi"      { System.out.print("FI\n"); }
+<YYINITIAL> "while"   { System.out.print("WHILE "); }
+<YYINITIAL> "do"      { System.out.print("DO "); }
+<YYINITIAL> "od"      { System.out.print("OD\n"); }
+<YYINITIAL> "forall"  { System.out.print("FORALL "); }
+<YYINITIAL> "in"      { System.out.print("IN "); }
+<YYINITIAL> "return"  { System.out.print("RETURN "); }
+
+//FDEF prints FUNCTION
 
 <YYINITIAL> {
 	/* Operators */
-	"/"  { return symbol(sym.DIV); }
-	"*"  { return symbol(sym.MULT); }
-	"-"  { return symbol(sym.SUBTRACT); }
-	"+"  { return symbol(sym.PLUS); }
-	":=" { return symbol(sym.ASSIGN); }
-	"="  { return symbol(sym.EQ); }
-	"!=" { return symbol(sym.NOTEQ); }
-	"<"  { return symbol(sym.LTHAN); }
-	">"  { return symbol(sym.GTHAN); }
-	"&&" { return symbol(sym.AND); }
-	"||" { return symbol(sym.OR); }
+	"/"  { System.out.print("DIVIDE "); }
+	"*"  { System.out.print("TIMES "); }
+	"-"  { System.out.print("MINUS "); }
+	"+"  { System.out.print("PLUS "); }
+	":=" { System.out.print("ASSIGN "); }
+	"="  { System.out.print("EQ "); }
+	"!=" { System.out.print("NOTEQ"); }
+	"<"  { System.out.print("LTHAN "); }
+	">"  { System.out.print("GTHAN "); }
+	"&&" { System.out.print("AND "); }
+	"||" { System.out.print("OR "); }
+
 
 	/* Separators */
-	";" { return symbol(sym.SEMI); }
-	":"	{ return symbol(sym.COLON); }
-	"(" { return symbol(sym.LPAREN); }
-	")" { return symbol(sym.RPAREN); }
-	"{" { return symbol(sym.LBRACE); }
-	"}" { return symbol(sym.RBRACE); }
-	"[" { return symbol(sym.LBRACKET); }
-	"]" { return symbol(sym.RBRACKET); }
+	";" { System.out.print("SEMI\n"); }
+	":"	{ System.out.print("TYPE "); }
+	"(" { System.out.print("LPAREN"); }
+	")" { System.out.print("RPAREN"); }
+	"{" { System.out.println("LBRACE"); }
+	"}" { System.out.println("RBRACE"); }
+	"[" { System.out.print("LBRACKET "); }
+	"]" { System.out.print("RBRACKET "); }
 
-	"fdef"                   { return symbol(sym.FUNCTION); }
+	"fdef"                   { System.out.print("FUNCTION "); }
 
-	"main"                   { return symbol(sym.MAIN); }
+	"main"                   { System.out.print("MAIN "); }
 
-	{Dictionary}             { return symbol(sym.DICT); }
+	{Dictionary}             { System.out.print(yytext() + " "); }
 
-	{Sequence}               { return symbol(sym.SEQ); }
+	{Sequence}               { System.out.print(yytext() + " "); }
 
-	{BooleanConstant}        { return symbol(sym.BOOLCONST); }
+	{SequenceContent}        { System.out.print(yytext() + " "); }
 
-	{Character}              { return symbol(sym.CHAR); }
+	{BooleanConstant}        { System.out.print("BOOLCONST "); }
 
-	{Integer}                { return symbol(sym.NUM, new Integer(yytext())); }
+	{Character}              { System.out.print(yytext() + " "); }
 
-	{Float}                  { return symbol(sym.NUM, new Float(yytext())); }
+	//Use this when actually returning Integers.
+	//return symbol(sym.NUM, new Integer(yytext()));
+	{Integer}                { System.out.print(yytext() + " "); }
 
-	{Identifier}             { return symbol(sym.ID, new Integer(1)); }
+	{Float}                  { System.out.print(yytext() + " "); }
 
-	{WhiteSpace}             { /* Ignore */ }
+	//Use this when actually returning an identifier.
+	//return symbol(sym.ID, new Integer(1));
+	{Identifier}             { System.out.print("ID(" + yytext() + ") "); }
 
-	{Comment}                { /* Ignore */ }
+	{WhiteSpace}             { /* IGNORE WHITESPACE */ }
+
+	{Comment}                { System.out.println("Comment: " + yytext());}
 }
 
-[^] {throw new Error("Illegal character <" + yytext() + ">");}
+[^]	{System.out.print(" | TODO: Error with char " + yytext() + " | ");}
+
+//[^] {throw new Error("Illegal character <" + yytext() + ">");}
+
+
+//TODO
+
+/* alias
+ * tdef
+ * declaration list
+ * Floats with non-num characters
+ * State for seq
+ * Deal with function calls
+ *
+ *
+ *
+ */
