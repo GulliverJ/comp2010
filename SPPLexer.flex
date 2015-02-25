@@ -2,7 +2,7 @@
 // Group 10
 // Coursework 1
 
-// Version 0.2 - Covers majority of basic syntax; lots left to do (dict and seq need work etc.)
+// Version 0.3 - Covers majority of basic syntax; DICT and SEQ still don't work (don't use them yet)
 //             - Some minor bug fixes
 
 
@@ -39,13 +39,12 @@ import java_cup.runtime.*;
 /* REGULAR EXPRESSIONS */
 LineTerminator   = \r|\n|\r\n
 WhiteSpace       = {LineTerminator} | [ \t\f]
-Integer          = 0 | [1-9][0-9]* | {NegativeInteger}
-Float            = (0|[1-9][0-9]*)("."[0-9]+)           //TODO - add "f" ending for float?
+Integer          = 0 | -* [1-9][0-9]*								// Added -* here to match, e.g. ----9
+Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
 Identifier       = [:jletter:] [:jletterdigit:]*
 InputCharacter   = [^\r\n]
 BooleanConstant  = "T" | "F"
 Character        = "'" [A-Z] "'" | "'" [a-z] "'"
-NegativeInteger  = "-"[1-9][0-9]*
 
 TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
 EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
@@ -81,6 +80,10 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 <YYINITIAL> "float"   { return symbol(sym.FLOAT); }
 <YYINITIAL> "top"     { return symbol(sym.TOP); }
 <YYINITIAL> "print"   { return symbol(sym.PRINT); }
+<YYINITIAL> "alias"   { return symbol(sym.ALIAS); }
+<YYINITIAL> "tdef"    { return symbol(sym.TDEF); }
+<YYINITIAL> "fdef"    { return symbol(sym.FDEF); }
+<YYINITIAL> "main"    { return symbol(sym.MAIN); }
 
 /* Control Flow */
 <YYINITIAL> "if"      { return symbol(sym.IF); }
@@ -100,13 +103,21 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 	"*"  { return symbol(sym.MULT); }
 	"-"  { return symbol(sym.SUBTRACT); }
 	"+"  { return symbol(sym.PLUS); }
+    "^"  { return symbol(sym.POW); }
+
+	","  { return symbol(sym.COMMA); }
 	":=" { return symbol(sym.ASSIGN); }
 	"="  { return symbol(sym.EQ); }
+	"::" { return symbol(sym.CONCAT); }
 	"!=" { return symbol(sym.NOTEQ); }
-	"<"  { return symbol(sym.LTHAN); }
-	">"  { return symbol(sym.GTHAN); }
+	"<"  { return symbol(sym.LANGLE); }
+	">"  { return symbol(sym.RANGLE); }
+	"=>" { return symbol(sym.IMPLIES); }
+	"<=" { return symbol(sym.LTEQ); }
 	"&&" { return symbol(sym.AND); }
 	"||" { return symbol(sym.OR); }
+	"!"  { return symbol(sym.NOT); }
+	"len"{ return symbol(sym.LEN); }
 
 	/* Separators */
 	";" { return symbol(sym.SEMI); }
@@ -117,10 +128,6 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 	"}" { return symbol(sym.RBRACE); }
 	"[" { return symbol(sym.LBRACKET); }
 	"]" { return symbol(sym.RBRACKET); }
-
-	"fdef"                   { return symbol(sym.FUNCTION); }
-
-	"main"                   { return symbol(sym.MAIN); }
 
 	{Dictionary}             { return symbol(sym.DICT); }
 
