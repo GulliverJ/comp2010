@@ -4,6 +4,6 @@
 
 a : int := 1 + 2;
 
-b : float := 4.523a5;
+b : float := -1.5;
 
-c : strong := "Hello World!";
+c: int := ----3;
