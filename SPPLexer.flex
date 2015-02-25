@@ -1,4 +1,4 @@
-// Version 0.1 - Basic lexer which recognises a very small subset of the final design
+// Version 0.2 - Basic lexer which recognises a very small subset of the final design
 //	           - Should return successful parse on, for example, "a : int := 1 + 2;"
 
 /* NEEDED FOR PARSER INTERFACING */
@@ -80,6 +80,11 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 <YYINITIAL> "float"   { System.out.print("FLOAT "); }
 <YYINITIAL> "top"     { System.out.print("TOP "); }
 <YYINITIAL> "print"   { System.out.print("PRINT "); }
+<YYINITIAL> "alias"   { System.out.print("ALIAS "); }
+<YYINITIAL> "fdef"    { System.out.print("FUNCTION "); }
+<YYINITIAL> "tdef"    { System.out.print("TYPEDEF "); }
+<YYINITIAL> "main"    { System.out.print("MAIN "); }
+
 
 /* Control Flow */
 <YYINITIAL> "if"      { System.out.print("IF "); }
@@ -103,9 +108,12 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 	"+"  { System.out.print("PLUS "); }
 	":=" { System.out.print("ASSIGN "); }
 	"="  { System.out.print("EQ "); }
+	"::" { System.out.print("CONCAT "); }
 	"!=" { System.out.print("NOTEQ"); }
 	"<"  { System.out.print("LTHAN "); }
+	"<=" { System.out.print("LTEQ "); }
 	">"  { System.out.print("GTHAN "); }
+	">=" { System.out.print("GTEQ"); }
 	"&&" { System.out.print("AND "); }
 	"||" { System.out.print("OR "); }
 
@@ -119,10 +127,6 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 	"}" { System.out.println("RBRACE"); }
 	"[" { System.out.print("LBRACKET "); }
 	"]" { System.out.print("RBRACKET "); }
-
-	"fdef"                   { System.out.print("FUNCTION "); }
-
-	"main"                   { System.out.print("MAIN "); }
 
 	{Dictionary}             { System.out.print(yytext() + " "); }
 
@@ -156,13 +160,10 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 
 //TODO
 
-/* alias
- * tdef
- * declaration list
+ * declaration list?
  * Floats with non-num characters
  * State for seq
- * Deal with function calls
- *
+ * Escape characters
  *
  *
  */
