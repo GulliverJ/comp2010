@@ -54,8 +54,19 @@ Type = "bool" | "int" | "char" | "rat" | "top" | "float"
 Dictionary = "dict<" {Type} "," {Type} ">"
 Sequence = "seq<"{Type}">"
 
-SequenceContent = [[0-9,]*]
+SequenceContent = {SeqInt} | {SeqChar} | {SeqBool} | {SeqFloat} | {SeqRat} | {SeqTop}
+SeqInt = "[" [[+-]?[0-9]," "]* "]"
+SeqChar = "[" ["'"[a-zA-Z]"'"," "]* "]"
+SeqBool = "[" ["T" | "F"," "]* "]"
+SeqFloat = "[" [[+-]?[0-9]*\.[0-9]+," "]* "]"
+SeqRat = "[" [[1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9]," "]* "]"
+SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+-]?[0-9]*\.[0-9]+ | "T" | "F" | "'"[a-zA-Z]"'" | [+-]?[0-9]," "]* "]"
 
+//To parse rational numbers, a new state will be required.
+//%STATE rational
+
+//A state for handling Top sequences?
+//%STATE topSeq
 
 %%
 
