@@ -1,16 +1,12 @@
+// COMP2010
+// Group 10
+// Coursework 1
 
-<<<<<<< HEAD
+// Version 0.2 - Covers majority of basic syntax; lots left to do (dict and seq need work etc.)
+//             - Some minor bug fixes
 
-//ed
-=======
-//hey
->>>>>>> 1f621f5b1861bdfef509d4044d3d4c0cc8f92c39
 
-// Version 0.1 - Basic lexer which recognises a very small subset of the final design
-//	           - Should return successful parse on, for example, "a : int := 1 + 2;"
-
-/* NEEDED FOR PARSER INTERFACING */
-//import java_cup.runtime.*;
+import java_cup.runtime.*;
 
 %%
 
@@ -20,18 +16,16 @@
 //Use unicode.
 %unicode
 
-//Turns on CUP compatability.
-//%cup
+//Toggle CUP compatability.
+%cup
 
 //Allows accessing of line and column values of current token.
 %line
 %column
 
 //Used when not interfacing with CUP.
-%standalone
+//%standalone
 
-/* USED FOR GENERATING SYMBOLS USED BY THE PARSER */
-/*
 %{
 	private Symbol symbol(int type) {
 		return new Symbol(type, yyline, yycolumn);
@@ -41,25 +35,25 @@
 		return new Symbol(type, yyline, yycolumn, value);
 	}
 %}
-*/
 
 /* REGULAR EXPRESSIONS */
-LineTerminator = \r|\n|\r\n
-WhiteSpace = {LineTerminator} | [ \t\f]
-Integer = 0 | [1-9][0-9]* | {NegativeInteger}
-Identifier = [:jletter:] [:jletterdigit:]*
-InputCharacter = [^\r\n]
-BooleanConstant = "T" | "F"
-Character = "'" [A-Z] "'" | "'" [a-z] "'"
-NegativeInteger = "-"[1-9][0-9]*
+LineTerminator   = \r|\n|\r\n
+WhiteSpace       = {LineTerminator} | [ \t\f]
+Integer          = 0 | [1-9][0-9]* | {NegativeInteger}
+Float            = (0|[1-9][0-9]*)("."[0-9]+)           //TODO - add "f" ending for float?
+Identifier       = [:jletter:] [:jletterdigit:]*
+InputCharacter   = [^\r\n]
+BooleanConstant  = "T" | "F"
+Character        = "'" [A-Z] "'" | "'" [a-z] "'"
+NegativeInteger  = "-"[1-9][0-9]*
 
-TraditionalComment = "/#" [^#] "#/" | "/#" "#"+ "/"
-EndOfLineComment = "#" {InputCharacter}* {LineTerminator}?
-Comment = {TraditionalComment} | {EndOfLineComment}
+TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
+EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
+Comment            = {TraditionalComment} | {EndOfLineComment}
 
-Type = "bool" | "int" | "char" | "rat" | "top" | "float"
+Type       = "bool" | "int" | "char" | "rat" | "top" | "float"
 Dictionary = "dict<" {Type} "," {Type} ">"
-Sequence = "seq<"{Type}">"
+Sequence   = "seq<"{Type}">"
 
 SequenceContent = {SeqInt} | {SeqChar} | {SeqBool} | {SeqFloat} | {SeqRat} | {SeqTop}
 SeqInt = "[" [[+-]?[0-9]," "]* "]"
@@ -79,62 +73,72 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 
 /* LEXICAL RULES */
 
-/* KEYWORDS */
-<YYINITIAL> "char" { System.out.println("CHAR"); }
-<YYINITIAL> "bool" { System.out.println("BOOL"); }
-<YYINITIAL> "int"  { System.out.println("INT"); }
-<YYINITIAL> "rat"  { System.out.println("RAT"); }
-<YYINITIAL> "float" { System.out.println("FLOAT"); }
-<YYINITIAL> "top" { System.out.println("TOP"); }
-<YYINITIAL> "if"  { System.out.println("IF"); }
-<YYINITIAL> "then"  { System.out.println("THEN"); }
-<YYINITIAL> "fi"  { System.out.println("FI"); }
-<YYINITIAL> "return"  { System.out.println("RETURN"); }
+/* Keywords */
+<YYINITIAL> "char"    { return symbol(sym.CHAR); }
+<YYINITIAL> "bool"    { return symbol(sym.BOOL); }
+<YYINITIAL> "int"     { return symbol(sym.INT); }
+<YYINITIAL> "rat"     { return symbol(sym.RAT); }
+<YYINITIAL> "float"   { return symbol(sym.FLOAT); }
+<YYINITIAL> "top"     { return symbol(sym.TOP); }
+<YYINITIAL> "print"   { return symbol(sym.PRINT); }
 
-//FDEF prints FUNCTION
+/* Control Flow */
+<YYINITIAL> "if"      { return symbol(sym.IF); }
+<YYINITIAL> "then"    { return symbol(sym.THEN); }
+<YYINITIAL> "else"    { return symbol(sym.ELSE); }
+<YYINITIAL> "fi"      { return symbol(sym.FI); }
+<YYINITIAL> "while"   { return symbol(sym.WHILE); }
+<YYINITIAL> "do"      { return symbol(sym.DO); }
+<YYINITIAL> "od"      { return symbol(sym.OD); }
+<YYINITIAL> "forall"  { return symbol(sym.FORALL); }
+<YYINITIAL> "in"      { return symbol(sym.IN); }
+<YYINITIAL> "return"  { return symbol(sym.RETURN); }
 
 <YYINITIAL> {
 	/* Operators */
-	"/"  { System.out.println("DIVIDE"); }
-	"*"  { System.out.println("TIMES"); }
-	"-"  { System.out.println("MINUS"); }
-	"+"  { System.out.println("PLUS"); }
-	":=" { System.out.println("ASSIGN"); }
-	"="  { System.out.println("EQ"); }
+	"/"  { return symbol(sym.DIV); }
+	"*"  { return symbol(sym.MULT); }
+	"-"  { return symbol(sym.SUBTRACT); }
+	"+"  { return symbol(sym.PLUS); }
+	":=" { return symbol(sym.ASSIGN); }
+	"="  { return symbol(sym.EQ); }
+	"!=" { return symbol(sym.NOTEQ); }
+	"<"  { return symbol(sym.LTHAN); }
+	">"  { return symbol(sym.GTHAN); }
+	"&&" { return symbol(sym.AND); }
+	"||" { return symbol(sym.OR); }
 
 	/* Separators */
-	";" { System.out.println("SEMI"); }
-	":"	{ System.out.println("TYPE"); }
-	"(" { System.out.println("LPAREN"); }
-	")" { System.out.println("RPAREN"); }
-	"{" { System.out.println(yytext()); }
-	"}" { System.out.println(yytext()); }
+	";" { return symbol(sym.SEMI); }
+	":"	{ return symbol(sym.COLON); }
+	"(" { return symbol(sym.LPAREN); }
+	")" { return symbol(sym.RPAREN); }
+	"{" { return symbol(sym.LBRACE); }
+	"}" { return symbol(sym.RBRACE); }
+	"[" { return symbol(sym.LBRACKET); }
+	"]" { return symbol(sym.RBRACKET); }
 
-	"fdef" { System.out.println("FUNCTION"); }
+	"fdef"                   { return symbol(sym.FUNCTION); }
 
-	"main" { System.out.println("MAIN"); }
+	"main"                   { return symbol(sym.MAIN); }
 
-	{Dictionary} { System.out.println(yytext()); }
+	{Dictionary}             { return symbol(sym.DICT); }
 
-	{Sequence} { System.out.println(yytext()); }
+	{Sequence}               { return symbol(sym.SEQ); }
 
-	{SequenceContent} { System.out.println(yytext()); }
+	{BooleanConstant}        { return symbol(sym.BOOLCONST); }
 
-	{BooleanConstant} { System.out.println("BOOLCONST"); }
+	{Character}              { return symbol(sym.CHAR); }
 
-	{Character} { System.out.println(yytext()); }
+	{Integer}                { return symbol(sym.NUM, new Integer(yytext())); }
 
-	//Use this when actually returning Integers.
-	//return symbol(sym.NUM, new Integer(yytext()));
-	{Integer} { System.out.println(yytext()); }
+	{Float}                  { return symbol(sym.NUM, new Float(yytext())); }
 
-	//Use this when actually returning an identifier.
-	//return symbol(sym.ID, new Integer(1));
-	{Identifier} { System.out.println("ID(" + yytext() + ")"); }
+	{Identifier}             { return symbol(sym.ID, new Integer(1)); }
 
-	{WhiteSpace} { /* IGNORE WHITESPACE */ }
+	{WhiteSpace}             { /* Ignore */ }
 
-	{Comment} { /* IGNORE COMMENTS */ }
+	{Comment}                { /* Ignore */ }
 }
 
-//[^] {throw new Error("Illegal character <" + yytext() + ">");}
+[^] {throw new Error("Illegal character <" + yytext() + ">");}
