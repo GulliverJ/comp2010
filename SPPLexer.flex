@@ -38,13 +38,12 @@
 /* REGULAR EXPRESSIONS */
 LineTerminator   = \r|\n|\r\n
 WhiteSpace       = {LineTerminator} | [ \t\f]
-Integer          = 0 | [1-9][0-9]* | {NegativeInteger}
-Float            = (0|[1-9][0-9]*)("."[0-9]+)           //TODO - add "f" ending for float?
+Integer          = 0 | -* [1-9][0-9]*								// Added -* here to match, e.g. ----9
+Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
 Identifier       = [:jletter:] [:jletterdigit:]*
 InputCharacter   = [^\r\n]
 BooleanConstant  = "T" | "F"
 Character        = "'" [A-Z] "'" | "'" [a-z] "'"
-NegativeInteger  = "-"[1-9][0-9]*
 
 TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
 EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
@@ -107,17 +106,19 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 	"+"   { System.out.print("PLUS "); }
 	"^"   { System.out.print("POW ");}
 
+	","   { System.out.print("COMMA "); }
 	":="  { System.out.print("ASSIGN "); }
 	"="   { System.out.print("EQ "); }
 	"::"  { System.out.print("CONCAT "); }
 	"!="  { System.out.print("NOTEQ"); }
-	"<"   { System.out.print("LTHAN "); }
+	"<"   { System.out.print("LANGLE "); }
+	">"   { System.out.print("RANGLE "); }
 	"<="  { System.out.print("LTEQ "); }
 	"&&"  { System.out.print("AND "); }
 	"||"  { System.out.print("OR "); }
 	"!"   { System.out.print("NOT "); }
-	"=>"  { System.out.Print("IMPLIES "); }
-	"\""  { yybegin(STRING);}
+	"=>"  { System.out.print("IMPLIES "); }
+//  "\""  { yybegin(STRING);}
 	"len" { System.out.print("LEN "); }
 
 
