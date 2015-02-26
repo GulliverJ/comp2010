@@ -2,7 +2,7 @@
 // Group 10
 // Coursework 1
 
-// Version 0.4 - Added dict and seq capabilities, plus something to recognise strings
+// Version 0.4 - Synchronizing files
 
 
 /* NEEDED FOR PARSER INTERFACING */
