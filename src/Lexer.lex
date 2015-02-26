@@ -211,13 +211,13 @@ StringCont         = [^\r\n\"\\]
     ","               { return symbol(sym.COMMA);  }
 
     //Deal with all possible contents of the dictionary.
-	{Float}           { return symbol(sym.NUM, new Float(yytext()); }
+	{Float}           { return symbol(sym.NUM, new Float(yytext())); }
 
 	{Rational}        { return symbol(sym.NUM); }
 
 	{Character}       { return symbol(sym.CHAR, yytext().charAt(0)); }
 
-	{Integer}         { return symbol(sym.NUM, new Integer(yytext())); ); }
+	{Integer}         { return symbol(sym.NUM, new Integer(yytext())); }
 
     {BooleanConstant} { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
 }
