@@ -1,5 +1,9 @@
-// Version 0.2 - Basic lexer which recognises a very small subset of the final design
-//	           - Should return successful parse on, for example, "a : int := 1 + 2;"
+// COMP2010
+// Group 10
+// Coursework 1
+
+// Version 0.4 - Added dict and seq capabilities, plus something to recognise strings
+
 
 /* NEEDED FOR PARSER INTERFACING */
 //import java_cup.runtime.*;
@@ -23,25 +27,26 @@
 %standalone
 
 /* USED FOR GENERATING SYMBOLS USED BY THE PARSER */
-/*
-%{
-	private Symbol symbol(int type) {
-		return new Symbol(type, yyline, yycolumn);
-	}
 
-	private Symbol symbol(int type, Object value) {
-		return new Symbol(type, yyline, yycolumn, value);
-	}
+%{
+    StringBuilder string = new StringBuilder();
+
+	//private Symbol symbol(int type) {
+	//	return new Symbol(type, yyline, yycolumn);
+	//}
+
+	//private Symbol symbol(int type, Object value) {
+	//	return new Symbol(type, yyline, yycolumn, value);
+	//}
 %}
-*/
+
 
 /* REGULAR EXPRESSIONS */
 LineTerminator     = \r|\n|\r\n
 WhiteSpace         = {LineTerminator} | [ \t\f]
 
-Integer            = 0 | -* [1-9][0-9]* | {NegativeInteger}
-NegativeInteger    = "-"[1-9][0-9]*
-Float              = (0|[1-9][0-9]*)("."[0-9]+)           //TODO - add "f" ending for float?
+Integer          = 0 | -* [1-9][0-9]*								// Added -* here to match, e.g. ----9
+Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
 Rational           = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[0-9]*
 BooleanConstant    = "T" | "F"
 Character          = "'" [A-Z] "'" | "'" [a-z] "'"
@@ -53,12 +58,13 @@ TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
 EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
 Comment            = {TraditionalComment} | {EndOfLineComment}
 
-Type               = "bool" | "int" | "char" | "rat" | "top" | "float"
-TypeInput          = {Integer} | {BooleanConstant} | {Character} | {Float} | {Rational}
+Type               = "bool" | "int" | "char" | "rat" | "top" | "float" | {Identifier}
+//TypeInput          = {Integer} | {BooleanConstant} | {Character} | {Float} | {Rational}
 
 Dictionary         = "dict<"
 DictType           = {Type} [^]* {Type}
 Sequence           = "seq<"
+StringCont         = [^\r\n\"\\]
 
 //A state for handling sequences?
 %state SEQ
@@ -66,7 +72,11 @@ Sequence           = "seq<"
 //State for handling dictionaries
 %state DICT
 
+//State for handling strings (seq<char>)
+%state STRING, TDEF, FDEF
+
 %%
+
 
 /* LEXICAL RULES */
 
@@ -139,8 +149,11 @@ Sequence           = "seq<"
 	"||"  { System.out.print("OR ");      }
 	"!"   { System.out.print("NOT ");     }
 	"=>"  { System.out.print("IMPLIES "); }
-    //  "\""  { yybegin(STRING);}
+
 	"len" { System.out.print("LEN ");     }
+
+	/* String literal */
+	\"    { yybegin(STRING); string.setLength(0); }
 
 	/* Deal with Dictionaries */
 	{Dictionary}             { yybegin(DICT); }
@@ -160,11 +173,28 @@ Sequence           = "seq<"
 	{Float}                  { System.out.print(yytext() + " "); }
 
 	//Cannot handle rationals - just prints whitespace for some reason.
-	//{Rational}               { System.out.print(yytext() + " "); }
+	//{Rational}             { System.out.print(yytext() + " "); }
 
-	//Use this when actually returning an identifier.
+	//Use this when actually returning an identifier. 
 	//return symbol(sym.ID, new Integer(1));
 	{Identifier}             { System.out.print("ID(" + yytext() + ") "); }
+}
+
+<STRING> {
+
+							//yybegin(YYINITIAL); return symbol(SEQ<CHAR>, string.toString());
+    \"                       { yybegin(YYINITIAL); System.out.print("SEQ<CHAR> " + string.toString() + " "); }
+
+	{StringCont}+            { string.append(yytext()); }
+
+	"\\b"                    { string.append( '\b' ); }
+    "\\t"                    { string.append( '\t' ); }
+    "\\n"                    { string.append( '\n' ); }
+    "\\f"                    { string.append( '\f' ); }
+    "\\r"                    { string.append( '\r' ); }
+    "\\\""                   { string.append( '\"' ); }
+    "\\'"                    { string.append( '\'' ); }
+    "\\\\"                   { string.append( '\\' ); }
 }
 
 /* LEXICAL STATE TO HANDLE SEQUENCES */
@@ -216,11 +246,10 @@ Sequence           = "seq<"
 
 }
 
+[^]                   { System.out.println("Unrecognised: " + yytext()); }
 //[^] {throw new Error("Illegal character <" + yytext() + ">");}
 
 
 /* TODO:
  * -> How are user-defined types dealt with, and where?
- * -> Floats with non-num characters (1.23a4)
- * -> Escape characters in a sequence of chars (string)
  */
