@@ -57,9 +57,8 @@ Comment            = {TraditionalComment} | {EndOfLineComment}
 
 Type       = "bool" | "int" | "char" | "rat" | "top" | "float"
 
-Dictionary         = "dict<"
-DictType           = {Type} [^]* {Type}
-Sequence           = "seq<"
+Dictionary         = "dict"
+Sequence           = "seq"
 StringCont         = [^\r\n\"\\]
 
 //A state for handling sequences?
@@ -99,10 +98,6 @@ StringCont         = [^\r\n\"\\]
 <YYINITIAL> "forall"  { return symbol(sym.FORALL); }
 <YYINITIAL> "in"      { return symbol(sym.IN); }
 <YYINITIAL> "return"  { return symbol(sym.RETURN); }
-
-/* Overides the colon's and semi colon's normal meaning of 
-   TYPE" when in the DICT or SEQstate. */
-
 
 /* SEPARATORS - can be matched in any state. */
 <YYINITIAL> ";" { return symbol(sym.SEMI); }
@@ -176,7 +171,7 @@ StringCont         = [^\r\n\"\\]
 }
 
 /* LEXICAL STATE TO HANDLE SEQUENCES */
-
+<SEQ> {
 	//Deal with operators. Assignment may be independant of any state.
 	";"               { return symbol(sym.SEMI); yybegin(YYINITIAL); }
 	":="              { return symbol(sym.ASSIGN); }
