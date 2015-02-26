@@ -102,13 +102,11 @@ StringCont         = [^\r\n\"\\]
 
 /* Overides the colon's and semi colon's normal meaning of 
    TYPE" when in the DICT or SEQstate. */
-<DICT> ":" { return symbol(sym.MAPSTO); }
-<DICT> ";" { return symbol(sym.SEMI); yybegin(YYINITIAL); }
-<SEQ> ";"  { return symbol(sym.SEMI); yybegin(YYINITIAL); }
+
 
 /* SEPARATORS - can be matched in any state. */
-";" { return symbol(sym.SEMI); }
-":"	{ return symbol(sym.COLON); }
+<YYINITIAL> ";" { return symbol(sym.SEMI); }
+<YYINITIAL> ":"	{ return symbol(sym.COLON); }
 "(" { return symbol(sym.LPAREN); }
 ")" { return symbol(sym.RPAREN); }
 "{" { return symbol(sym.LBRACE); }
@@ -178,9 +176,9 @@ StringCont         = [^\r\n\"\\]
 }
 
 /* LEXICAL STATE TO HANDLE SEQUENCES */
-<SEQ> {
 
 	//Deal with operators. Assignment may be independant of any state.
+	";"               { return symbol(sym.SEMI); yybegin(YYINITIAL); }
 	":="              { return symbol(sym.ASSIGN); }
 	"<"               { return symbol(sym.LANGLE); }
 	">"               { return symbol(sym.RANGLE); }
@@ -205,6 +203,8 @@ StringCont         = [^\r\n\"\\]
 <DICT> {
 	
 	//Deal with operators. Assignment may be ableindependant of any state.
+	";"               { return symbol(sym.SEMI); yybegin(YYINITIAL); }
+	":"               { return symbol(sym.MAPSTO); }
 	":="              { return symbol(sym.ASSIGN); }
 	"<"               { return symbol(sym.LANGLE); }
 	">"               { return symbol(sym.RANGLE); }
