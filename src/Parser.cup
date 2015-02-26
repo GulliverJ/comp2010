@@ -1,0 +1,174 @@
+import java_cup.runtime.*;
+   
+parser code {:
+    boolean syntaxErrors = true;
+    
+    public void report_error(String message, Object info) {
+        
+        StringBuilder m = new StringBuilder("Error");
+   
+        if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+   
+            if (s.left >= 0) {                
+                m.append(" in line "+(s.left+1));   
+                if (s.right >= 0)                    
+                    m.append(", column "+(s.right+1));
+            }
+        }
+   
+        m.append(" : "+message);
+   
+        System.err.println(m);
+    }
+   
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+    public void syntax_error(Symbol current_token) {
+        System.out.println(current_token.toString());
+        report_error("Syntax error at line " + (current_token.left+1) + ", column "+ current_token.right, null);
+    }
+
+:};
+
+
+terminal PLUS, SEMI, CHAR, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS;
+
+/* Non terminals */
+non terminal            S, decList, dec, funcDef, main, params, moreParams, returnType, type;
+non terminal            typeDef, typeFields, moreTypeFields, aliasDec, varDec, varInit, varAssignment;
+non terminal            expression, arithExpression, boolExpression;
+non terminal            body, statement, statementPrime, statementList, controlFlow;
+
+/* DEBUG READ LINE BELOW!!! */
+/* DON'T FORGET TO USE 'non terminal Integer' etc. non terminal Integer    expr; */
+
+/* Precedences */
+precedence left ASSIGN;
+precedence left OR;
+precedence left AND;
+precedence left IMPLIES;
+precedence left NOT;
+precedence left NOTEQ;
+precedence left EQ;
+precedence left LTEQ;
+precedence left LANGLE;
+precedence left SUBTRACT;
+precedence left PLUS;
+precedence left DIV;
+precedence left MULT;
+precedence left POW;
+precedence right ID;
+
+
+/* The grammar rules */
+
+S         ::= decList main decList          {: System.out.println("matched S");:}
+            ;
+
+decList   ::=                               {: System.out.println("empty decList");:}
+            | dec decList                   {: System.out.println("non-empty decList");:}
+            ;
+
+dec       ::= funcDef                       {: System.out.println("dec -> funcDef");:} 
+            | typeDef                       {: System.out.println("dec -> typeDef");:} 
+            | aliasDec                      {: System.out.println("dec -> funcDef");:} 
+            | varDec                        {: System.out.println("dec -> varDec");:} 
+            ;
+
+funcDef   ::= FDEF ID LPAREN params RPAREN LBRACE body RBRACE returnType SEMI {: System.out.println("funcDef cool");:}
+            ;
+
+params    ::= 
+            | ID COLON type moreParams
+            ;
+
+moreParams ::=
+             | COMMA params
+             ;
+
+returnType ::=
+             | COLON type
+             ;
+
+type       ::= FLOAT 
+             | INT 
+             | RAT 
+             | BOOL 
+             | CHAR 
+             | SEQ 
+             | DICT 
+             | TOP 
+             ;
+
+main      ::= MAIN                         {: System.out.println("matched main");:}
+            ;
+
+typeDef   ::= TDEF ID LBRACE typeFields RBRACE SEMI
+            ;
+
+typeFields ::= ID COLON type moreTypeFields
+             ;
+
+moreTypeFields ::=
+                 | COMMA typeFields
+                 ;
+
+aliasDec ::= ALIAS type ID SEMI
+           ;
+
+varDec ::= ID COLON type varInit SEMI
+         ;
+
+varInit ::=
+          | ASSIGN expression
+          ;
+
+varAssignment ::= ID ASSIGN expression          {: System.out.println("HOWDY");:}
+                ;
+
+body ::= decList statementList                  {: System.out.println("matched body");:}
+       ;
+
+statementList ::= statement statementPrime      {: System.out.println("statement list");:}
+                ;
+
+statementPrime ::=
+                 | statementList
+                 ;
+
+statement ::= varAssignment SEMI                {: System.out.println("statement var assignment");:}
+            | expression SEMI                   {: System.out.println("statement expression SEMI");:}
+            | controlFlow                       {: System.out.println("statement controlFlow");:}
+            ;
+
+controlFlow ::= WHILE LPAREN expression RPAREN DO body OD
+              | FORALL LPAREN expression IN expression RPAREN DO body OD
+              | IF LPAREN expression RPAREN THEN body FI
+              | IF LPAREN expression RPAREN THEN body ELSE body FI
+              | RETURN expression
+              ;
+
+expression ::= ID                           {: System.out.println("ID, expression -> Dont forget to handle string literals");:}
+             | arithExpression              {: System.out.println("ARITH, expression -> Dont forget to handle string literals");:}
+             | boolExpression               {: System.out.println("BOOL, expression -> Dont forget to handle string literals");:}
+             | BOOLCONST                    {: System.out.println("BOLCONST, expression -> Dont forget to handle string literals");:}
+             | NUM                          {: System.out.println("NUM, expression -> Dont forget to handle string literals");:}
+             ;
+
+arithExpression ::= expression PLUS expression
+                  | expression SUBTRACT expression
+                  | expression MULT expression
+                  | expression DIV expression
+                  | expression POW expression
+                  ;
+
+boolExpression ::= NOT expression
+                 | expression EQ expression
+                 | expression NOTEQ expression
+                 | expression AND expression
+                 | expression OR expression
+                 | expression IMPLIES expression
+                 ;
