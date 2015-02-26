@@ -49,7 +49,7 @@ Integer          = 0 | -* [1-9][0-9]*								// Added -* here to match, e.g. ---
 Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
 Rational           = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[0-9]*
 BooleanConstant    = "T" | "F"
-Character          = "'" [A-Z] "'" | "'" [a-z] "'"
+Character          = "'" [A-Z] "'" | "'" [a-z] "'" | '0' | "'" [+-]?[1-9][0-9]* "'"
 
 Identifier         = [:jletter:] [:jletterdigit:]*
 InputCharacter     = [^\r\n]
@@ -58,11 +58,12 @@ TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
 EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
 Comment            = {TraditionalComment} | {EndOfLineComment}
 
-Type               = "bool" | "int" | "char" | "rat" | "top" | "float" | {Identifier}
+Type               = "bool" | "int" | "char" | "rat" | "top" | "float" 
+//{Identifier}
 //TypeInput          = {Integer} | {BooleanConstant} | {Character} | {Float} | {Rational}
 
 Dictionary         = "dict<"
-DictType           = {Type} [^]* {Type}
+DictType           = {Type} [^] {Type} | {Type} [^][^] {Type} | {Type} [^][^][^] {Type}
 Sequence           = "seq<"
 StringCont         = [^\r\n\"\\]
 
@@ -117,7 +118,6 @@ StringCont         = [^\r\n\"\\]
 "}" { System.out.print("RBRACE ");   }
 "[" { System.out.print("LBRACKET "); }
 "]" { System.out.print("RBRACKET "); }
-";" { System.out.print("SEMI\n");    }
 ":"	{ System.out.print("TYPE ");     }
 "(" { System.out.print("LPAREN ");   }
 ")" { System.out.print("RPAREN ");   }
@@ -149,6 +149,9 @@ StringCont         = [^\r\n\"\\]
 	"||"  { System.out.print("OR ");      }
 	"!"   { System.out.print("NOT ");     }
 	"=>"  { System.out.print("IMPLIES "); }
+
+	//This particular separator is not state independant.
+	";"   { System.out.print("SEMI\n");    }
 
 	"len" { System.out.print("LEN ");     }
 
@@ -223,11 +226,11 @@ StringCont         = [^\r\n\"\\]
 
 /* LEXICAL STATE TO HANDLE DICTIONARIES */
 <DICT> {
-	
+
 	//Deal with operators. Assignment may be ableindependant of any state.
 	":="              { System.out.print("ASSIGN "); }
-	">"               { /* IGNORE */}
-    ":"               { System.out.print("MAPSTO "); }
+	">"               { /* IGNORE */ }
+    //":"               { System.out.print("MAPSTO "); }
     ","               { System.out.print("COMMA ");  }
 
     //Deal with all possible contents of the dictionary.
