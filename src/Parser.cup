@@ -34,7 +34,7 @@ parser code {:
 :};
 
 
-terminal PLUS, SEMI, CHAR, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS, STRING;
+terminal PLUS, SEMI, CHAR, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS, STRING, MAPSTO, ERROR;
 
 /* Non terminals */
 non terminal            S, decList, dec, funcDef, main, params, moreParams, returnType, type;
@@ -172,8 +172,8 @@ keyValPair ::= type COLON type
 seqLiteral ::= LBRACKET seqValList RBRACKET
              ;
 
-seqValList ::= type
-             | type seqValList
+seqValList ::= expression
+             | expression COMMA seqValList
              ;
 
 aggregateType ::= DICT LANGLE dictType RANGLE
