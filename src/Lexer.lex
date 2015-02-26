@@ -102,6 +102,7 @@ StringCont         = [^\r\n\"\\]
 
 /* Overides the colon's and semi colon's normal meaning of 
    TYPE" when in the DICT or SEQstate. */
+<DICT> ":" { return symbol(sym.MAPSTO); }
 <DICT> ";" { return symbol(sym.SEMI); yybegin(YYINITIAL); }
 <SEQ> ";"  { return symbol(sym.SEMI); yybegin(YYINITIAL); }
 
@@ -204,8 +205,8 @@ StringCont         = [^\r\n\"\\]
 	
 	//Deal with operators. Assignment may be ableindependant of any state.
 	":="              { return symbol(sym.ASSIGN); }
-	">"               { /* IGNORE */}
-    ":"               { return symbol(sym.MAPSTO); }
+	"<"               { return symbol(sym.LANGLE); }
+	">"               { return symbol(sym.RANGLE); }
     ","               { return symbol(sym.COMMA);  }
 
     //Deal with all possible contents of the dictionary.
@@ -218,9 +219,6 @@ StringCont         = [^\r\n\"\\]
 	{Integer}         { return symbol(sym.NUM, new Integer(yytext())); ); }
 
     {BooleanConstant} { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
-
-    //Determine the types of the dictionary.
-    {DictType}        { return symbol(sym.DICT, yytext().toUpperCase()); }
 }
 
 [^] { return symbol(sym.ERROR); }
