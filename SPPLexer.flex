@@ -73,7 +73,7 @@ StringCont         = [^\r\n\"\\]
 %state DICT
 
 //State for handling strings (seq<char>)
-%state STRING, TDEF, FDEF
+%state STRING
 
 %%
 
@@ -182,8 +182,8 @@ StringCont         = [^\r\n\"\\]
 
 <STRING> {
 
-							//yybegin(YYINITIAL); return symbol(SEQ<CHAR>, string.toString());
-    \"                       { yybegin(YYINITIAL); System.out.print("SEQ<CHAR> " + string.toString() + " "); }
+							//yybegin(YYINITIAL); return symbol(STRING, string.toString());
+    \"                       { yybegin(YYINITIAL); System.out.print("STRING " + string.toString() + " "); }
 
 	{StringCont}+            { string.append(yytext()); }
 
