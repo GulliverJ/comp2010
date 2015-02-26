@@ -223,4 +223,4 @@ StringCont         = [^\r\n\"\\]
     {DictType}        { return symbol(sym.DICT, yytext().toUpperCase()); }
 }
 
-[^] {throw new Error("Illegal character <" + yytext() + ">");}
+[^] { return symbol(sym.ERROR); }
