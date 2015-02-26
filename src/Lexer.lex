@@ -198,7 +198,7 @@ StringCont         = [^\r\n\"\\]
 <DICT> {
 	
 	//Deal with operators. Assignment may be ableindependant of any state.
-	";"               { return symbol(sym.SEMI); yybegin(YYINITIAL); }
+	";"               { return symbol(sym.SEMI, yybegin(YYINITIAL)); }
 	":"               { return symbol(sym.MAPSTO); }
 	":="              { return symbol(sym.ASSIGN); }
 	"<"               { return symbol(sym.LANGLE); }
