@@ -173,7 +173,7 @@ StringCont         = [^\r\n\"\\]
 /* LEXICAL STATE TO HANDLE SEQUENCES */
 <SEQ> {
 	//Deal with operators. Assignment may be independant of any state.
-	";"               { return symbol(sym.SEMI); yybegin(YYINITIAL); }
+	";"               { return symbol(sym.SEMI, yybegin(YYINITIAL)); }
 	":="              { return symbol(sym.ASSIGN); }
 	"<"               { return symbol(sym.LANGLE); }
 	">"               { return symbol(sym.RANGLE); }
