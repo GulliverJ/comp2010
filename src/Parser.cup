@@ -34,17 +34,16 @@ parser code {:
 :};
 
 
-terminal PLUS, SEMI, CHAR, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS;
+terminal PLUS, SEMI, CHAR, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS, STRING;
 
 /* Non terminals */
 non terminal            S, decList, dec, funcDef, main, params, moreParams, returnType, type;
 non terminal            typeDef, typeFields, moreTypeFields, aliasDec, varDec, varInit, varAssignment;
 non terminal            expression, arithExpression, boolExpression;
 non terminal            body, statement, moreStatements, statementList, controlFlow;
+non terminal            aggregateType, dictType, seqLiteral, dictLiteral, keyValPair, keyValPairList, seqValList;
 
 /* Precedences */
-precedence left COLON;
-precedence left ASSIGN;
 precedence left OR;
 precedence left AND;
 precedence left IMPLIES;
@@ -96,9 +95,8 @@ type       ::= FLOAT
              | RAT 
              | BOOL 
              | CHAR 
-             | SEQ 
-             | DICT 
              | TOP 
+             | aggregateType
              ;
 
 main      ::= MAIN                         {: System.out.println("matched main");:}
@@ -138,7 +136,6 @@ moreStatements ::=
                  ;
 
 statement ::= varAssignment SEMI                {: System.out.println("statement var assignment");:}
-            | expression SEMI                   {: System.out.println("statement expression SEMI");:}
             | controlFlow                       {: System.out.println("statement controlFlow");:}
             ;
 
@@ -149,12 +146,42 @@ controlFlow ::= WHILE LPAREN expression RPAREN DO body OD
               | RETURN expression
               ;
 
-expression ::= ID                           {: System.out.println("ID, expression -> Dont forget to handle string literals");:}
-             | arithExpression              {: System.out.println("ARITH, expression -> Dont forget to handle string literals");:}
-             | boolExpression               {: System.out.println("BOOL, expression -> Dont forget to handle string literals");:}
-             | BOOLCONST                    {: System.out.println("BOLCONST, expression -> Dont forget to handle string literals");:}
-             | NUM                          {: System.out.println("NUM, expression -> Dont forget to handle string literals");:}
+expression ::= ID                   
+             | arithExpression              
+             | boolExpression               
+             | BOOLCONST                    
+             | NUM                          
+             | STRING
+             | dictLiteral
+             | seqLiteral
              ;
+
+dictLiteral ::= LBRACE keyValPairList RBRACE
+              ;
+
+keyValPairList ::= keyValPair
+                 | keyValPair COMMA keyValPairList
+                 ;
+
+keyValPair ::= type COLON type
+             | dictLiteral COLON type
+             | type COLON dictLiteral
+             | dictLiteral COLON dictLiteral
+             ;
+
+seqLiteral ::= LBRACKET seqValList RBRACKET
+             ;
+
+seqValList ::= type
+             | type seqValList
+             ;
+
+aggregateType ::= DICT LANGLE dictType RANGLE
+                | SEQ LANGLE type RANGLE
+                ;
+
+dictType ::= type COMMA type
+           ;
 
 arithExpression ::= expression PLUS expression
                   | expression SUBTRACT expression
