@@ -209,6 +209,8 @@ StringCont         = [^\r\n\"\\]
 	">"               { System.out.print("RANGLE "); }
 	","               { System.out.print("COMMA ");  }
 
+	{Sequence}        { System.out.print("SEQ ");    }
+
 	//Handle all possible contents of the sequence.
 	{Float}           { System.out.print("NUM(" + yytext() + ") ");               }
 
@@ -219,6 +221,8 @@ StringCont         = [^\r\n\"\\]
 	{Integer}         { System.out.print("NUM(" + yytext() + ") ");               }
 
     {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");         }
+
+    {Identifier}             { System.out.print("ID(" + yytext() + ") "); }
 
 }
 
@@ -231,6 +235,8 @@ StringCont         = [^\r\n\"\\]
 	">"               { System.out.print("RANGLE "); }
     ","               { System.out.print("COMMA ");  }
 
+    {Dictionary}      { System.out.print("DICT "); }
+
     //Deal with all possible contents of the dictionary.
 	{Float}           { System.out.print("NUM(" + yytext() + ") ");                }
 
@@ -241,6 +247,8 @@ StringCont         = [^\r\n\"\\]
 	{Integer}         { System.out.print("NUM(" + yytext() + ") ");                }
 
     {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");          }
+
+    {Identifier}      { System.out.print("ID(" + yytext() + ") "); }
 
 }
 
