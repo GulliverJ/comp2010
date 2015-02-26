@@ -62,9 +62,9 @@ Type               = "bool" | "int" | "char" | "rat" | "top" | "float"
 //{Identifier}
 //TypeInput          = {Integer} | {BooleanConstant} | {Character} | {Float} | {Rational}
 
-Dictionary         = "dict<"
-DictType           = {Type} [^] {Type} | {Type} [^][^] {Type} | {Type} [^][^][^] {Type}
-Sequence           = "seq<"
+Dictionary         = "dict"
+//DictType           = {Type} [^] {Type} | {Type} [^][^] {Type} | {Type} [^][^][^] {Type}
+Sequence           = "seq"
 StringCont         = [^\r\n\"\\]
 
 //A state for handling sequences?
@@ -82,12 +82,12 @@ StringCont         = [^\r\n\"\\]
 /* LEXICAL RULES */
 
 /* KEYWORDS */
-<YYINITIAL> "char"    { System.out.print("CHAR ");     }
-<YYINITIAL> "bool"    { System.out.print("BOOL ");     }
-<YYINITIAL> "int"     { System.out.print("INT ");      }
-<YYINITIAL> "rat"     { System.out.print("RAT ");      }
-<YYINITIAL> "float"   { System.out.print("FLOAT ");    }
-<YYINITIAL> "top"     { System.out.print("TOP ");      }
+"char"    { System.out.print("CHAR ");     }
+"bool"    { System.out.print("BOOL ");     }
+"int"     { System.out.print("INT ");      }
+"rat"     { System.out.print("RAT ");      }
+"float"   { System.out.print("FLOAT ");    }
+"top"     { System.out.print("TOP ");      }
 <YYINITIAL> "print"   { System.out.print("PRINT ");    }
 <YYINITIAL> "alias"   { System.out.print("ALIAS ");    }
 <YYINITIAL> "fdef"    { System.out.print("FUNCTION "); }
@@ -159,7 +159,7 @@ StringCont         = [^\r\n\"\\]
 	\"    { yybegin(STRING); string.setLength(0); }
 
 	/* Deal with Dictionaries */
-	{Dictionary}             { yybegin(DICT); }
+	{Dictionary}             { System.out.print("DICT "); yybegin(DICT); }
 
 	/* Deal with Sequences */
 	{Sequence}               { yybegin(SEQ);  }
@@ -220,7 +220,7 @@ StringCont         = [^\r\n\"\\]
     {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");         }
 
     //Determine the type of the sequence.
-	{Type}            { System.out.print("SEQ(" + yytext().toUpperCase() + ") "); }
+	//{Type}            { System.out.print("SEQ(" + yytext().toUpperCase() + ") "); }
 
 }
 
@@ -229,7 +229,8 @@ StringCont         = [^\r\n\"\\]
 
 	//Deal with operators. Assignment may be ableindependant of any state.
 	":="              { System.out.print("ASSIGN "); }
-	">"               { /* IGNORE */ }
+	"<"               { System.out.print("LANGLE "); }
+	">"               { System.out.print("RANGLE "); }
     //":"               { System.out.print("MAPSTO "); }
     ","               { System.out.print("COMMA ");  }
 
@@ -243,9 +244,6 @@ StringCont         = [^\r\n\"\\]
 	{Integer}         { System.out.print("NUM(" + yytext() + ") ");                }
 
     {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");          }
-
-    //Determine the types of the dictionary.
-    {DictType}        { System.out.print("DICT(" + yytext().toUpperCase() + ") "); }
 
 }
 
