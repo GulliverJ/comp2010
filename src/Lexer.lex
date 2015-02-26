@@ -50,12 +50,9 @@ Character        = "'" [A-Z] "'" | "'" [a-z] "'"
 Identifier       = [:jletter:] [:jletterdigit:]*
 InputCharacter   = [^\r\n]
 
-
 TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
 EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
 Comment            = {TraditionalComment} | {EndOfLineComment}
-
-Type       = "bool" | "int" | "char" | "rat" | "top" | "float"
 
 Dictionary         = "dict"
 Sequence           = "seq"
@@ -75,12 +72,12 @@ StringCont         = [^\r\n\"\\]
 /* LEXICAL RULES */
 
 /* Keywords */
-<YYINITIAL> "char"    { return symbol(sym.CHAR); }
-<YYINITIAL> "bool"    { return symbol(sym.BOOL); }
-<YYINITIAL> "int"     { return symbol(sym.INT); }
-<YYINITIAL> "rat"     { return symbol(sym.RAT); }
-<YYINITIAL> "float"   { return symbol(sym.FLOAT); }
-<YYINITIAL> "top"     { return symbol(sym.TOP); }
+"char"                { return symbol(sym.CHAR); }
+"bool"                { return symbol(sym.BOOL); }
+"int"                 { return symbol(sym.INT); }
+"rat"                 { return symbol(sym.RAT); }
+"float"               { return symbol(sym.FLOAT); }
+"top"                 { return symbol(sym.TOP); }
 <YYINITIAL> "print"   { return symbol(sym.PRINT); }
 <YYINITIAL> "alias"   { return symbol(sym.ALIAS); }
 <YYINITIAL> "tdef"    { return symbol(sym.TDEF); }
@@ -190,8 +187,7 @@ StringCont         = [^\r\n\"\\]
 
     {BooleanConstant} { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
 
-    //Determine the type of the sequence.
-	{Type}            { return symbol(sym.SEQ, yytext().toUpperCase()); }
+	{Identifier}      { return symbol(sym.ID, new Integer(1)); }
 }
 
 /* LEXICAL STATE TO HANDLE DICTIONARIES */
