@@ -162,7 +162,7 @@ StringCont         = [^\r\n\"\\]
 
 <STRING> {
 
-    \"                       { yybegin(YYINITIAL); return symbol(STRING, string.toString()); }
+    \"                       { yybegin(YYINITIAL); return symbol(sym.STRING, string.toString()); }
 
 	{StringCont}+            { string.append(yytext()); }
 
