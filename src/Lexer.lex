@@ -2,8 +2,7 @@
 // Group 10
 // Coursework 1
 
-// Version 0.3 - Covers majority of basic syntax; DICT and SEQ still don't work (don't use them yet)
-//             - Some minor bug fixes
+// Version 0.4
 
 
 import java_cup.runtime.*;
@@ -103,7 +102,6 @@ StringCont         = [^\r\n\"\\]
 
 /* Overides the colon's and semi colon's normal meaning of 
    TYPE" when in the DICT or SEQstate. */
-<DICT> ":" { return symbol(sym.MAPSTO);                   }
 <DICT> ";" { return symbol(sym.SEMI); yybegin(YYINITIAL); }
 <SEQ> ";"  { return symbol(sym.SEMI); yybegin(YYINITIAL); }
 
@@ -208,7 +206,7 @@ StringCont         = [^\r\n\"\\]
 	":="              { return symbol(sym.ASSIGN); }
 	">"               { /* IGNORE */}
     ":"               { return symbol(sym.MAPSTO); }
-    ","               { System.out.print("COMMA ");  }
+    ","               { return symbol(sym.COMMA);  }
 
     //Deal with all possible contents of the dictionary.
 	{Float}           { return symbol(sym.NUM, new Float(yytext()); }
