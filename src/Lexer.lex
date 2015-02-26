@@ -117,7 +117,7 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 	"&&" { return symbol(sym.AND); }
 	"||" { return symbol(sym.OR); }
 	"!"  { return symbol(sym.NOT); }
-	"len"{ return symbol(sym.LEN); }
+	"len" { return symbol(sym.LEN); }
 
 	/* Separators */
 	";" { return symbol(sym.SEMI); }
