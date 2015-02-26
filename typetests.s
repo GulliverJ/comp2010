@@ -1,7 +1,3 @@
-/# NOTE: If a comment is below a line of text, then it is not recognised as a comment
- #       for an unknown reason.
- #/
-
 #c : char := 'c';
 #c2 : char := 'C';
 #i : int := 0;
@@ -22,4 +18,5 @@
 #d4 : dict<int, top> := [1:'a', 2:3, 3:T, 4:5435345.345345, 5:5_8/33];
 #d1 : dict< int , char > := [1:'a', 2:'b', 3:'c', 4:'d'];
 #d2 : dict< int , int > := [1:2, 2:3, 3:4, 4:5];
-#d5 : dict<int, top> := {1:'a', 2:3, 3:T, 4:5435345.345345, 5:5_8/33, {1:T}};
+d5 : dict<int, top> := {1:'a' , 2:3 , 3:T , 4:5435345.345345 , 5:5_8/33 , {1:T}};
+#d6 : dict<int, char> := {1:'1', 2:'2', 3:'3', 4:'4'};
