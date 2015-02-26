@@ -36,109 +36,120 @@
 */
 
 /* REGULAR EXPRESSIONS */
-LineTerminator   = \r|\n|\r\n
-WhiteSpace       = {LineTerminator} | [ \t\f]
-Integer          = 0 | -* [1-9][0-9]*								// Added -* here to match, e.g. ----9
-Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
-Identifier       = [:jletter:] [:jletterdigit:]*
-InputCharacter   = [^\r\n]
-BooleanConstant  = "T" | "F"
-Character        = "'" [A-Z] "'" | "'" [a-z] "'"
+LineTerminator     = \r|\n|\r\n
+WhiteSpace         = {LineTerminator} | [ \t\f]
+
+Integer            = 0 | -* [1-9][0-9]* | {NegativeInteger}
+NegativeInteger    = "-"[1-9][0-9]*
+Float              = (0|[1-9][0-9]*)("."[0-9]+)           //TODO - add "f" ending for float?
+Rational           = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[0-9]*
+BooleanConstant    = "T" | "F"
+Character          = "'" [A-Z] "'" | "'" [a-z] "'"
+
+Identifier         = [:jletter:] [:jletterdigit:]*
+InputCharacter     = [^\r\n]
 
 TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
 EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
 Comment            = {TraditionalComment} | {EndOfLineComment}
 
-Type       = "bool" | "int" | "char" | "rat" | "top" | "float"
-Dictionary = "dict<" {Type} "," {Type} ">"
-Sequence   = "seq<"{Type}">"
+Type               = "bool" | "int" | "char" | "rat" | "top" | "float"
+TypeInput          = {Integer} | {BooleanConstant} | {Character} | {Float} | {Rational}
 
-SequenceContent = {SeqInt} | {SeqChar} | {SeqBool} | {SeqFloat} | {SeqRat} | {SeqTop}
-SeqInt = "[" [[+-]?[0-9]," "]* "]"
-SeqChar = "[" ["'"[a-zA-Z]"'"," "]* "]"
-SeqBool = "[" ["T" | "F"," "]* "]"
-SeqFloat = "[" [[+-]?[0-9]*\.[0-9]+," "]* "]"
-SeqRat = "[" [[1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9]," "]* "]"
-SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+-]?[0-9]*\.[0-9]+ | "T" | "F" | "'"[a-zA-Z]"'" | [+-]?[0-9]," "]* "]"
+Dictionary         = "dict<"
+DictType           = {Type} [^]* {Type}
+Sequence           = "seq<"
 
-//To parse rational numbers, a new state will be required.
-//%STATE rational
+//A state for handling sequences?
+%state SEQ
 
-//A state for handling Top sequences?
-//%STATE topSeq
+//State for handling dictionaries
+%state DICT
 
 %%
 
 /* LEXICAL RULES */
 
-/* Keywords */
-<YYINITIAL> "char"    { System.out.print("CHAR "); }
-<YYINITIAL> "bool"    { System.out.print("BOOL "); }
-<YYINITIAL> "int"     { System.out.print("INT "); }
-<YYINITIAL> "rat"     { System.out.print("RAT "); }
-<YYINITIAL> "float"   { System.out.print("FLOAT "); }
-<YYINITIAL> "top"     { System.out.print("TOP "); }
-<YYINITIAL> "print"   { System.out.print("PRINT "); }
-<YYINITIAL> "alias"   { System.out.print("ALIAS "); }
+/* KEYWORDS */
+<YYINITIAL> "char"    { System.out.print("CHAR ");     }
+<YYINITIAL> "bool"    { System.out.print("BOOL ");     }
+<YYINITIAL> "int"     { System.out.print("INT ");      }
+<YYINITIAL> "rat"     { System.out.print("RAT ");      }
+<YYINITIAL> "float"   { System.out.print("FLOAT ");    }
+<YYINITIAL> "top"     { System.out.print("TOP ");      }
+<YYINITIAL> "print"   { System.out.print("PRINT ");    }
+<YYINITIAL> "alias"   { System.out.print("ALIAS ");    }
 <YYINITIAL> "fdef"    { System.out.print("FUNCTION "); }
-<YYINITIAL> "tdef"    { System.out.print("TYPEDEF "); }
-<YYINITIAL> "main"    { System.out.print("MAIN "); }
+<YYINITIAL> "tdef"    { System.out.print("TYPEDEF ");  }
+<YYINITIAL> "main"    { System.out.print("MAIN ");     }
 
 
-/* Control Flow */
-<YYINITIAL> "if"      { System.out.print("IF "); }
-<YYINITIAL> "then"    { System.out.print("THEN "); }
-<YYINITIAL> "else"    { System.out.print("THEN "); }
-<YYINITIAL> "fi"      { System.out.print("FI\n"); }
-<YYINITIAL> "while"   { System.out.print("WHILE "); }
-<YYINITIAL> "do"      { System.out.print("DO "); }
-<YYINITIAL> "od"      { System.out.print("OD\n"); }
+/* CONTROL FLOW */
+<YYINITIAL> "if"      { System.out.print("IF ");     }
+<YYINITIAL> "then"    { System.out.print("THEN ");   }
+<YYINITIAL> "else"    { System.out.print("THEN ");   }
+<YYINITIAL> "fi"      { System.out.print("FI\n");    }
+<YYINITIAL> "while"   { System.out.print("WHILE ");  }
+<YYINITIAL> "do"      { System.out.print("DO ");     }
+<YYINITIAL> "od"      { System.out.print("OD\n");    }
 <YYINITIAL> "forall"  { System.out.print("FORALL "); }
-<YYINITIAL> "in"      { System.out.print("IN "); }
+<YYINITIAL> "in"      { System.out.print("IN ");     }
 <YYINITIAL> "return"  { System.out.print("RETURN "); }
+
+//Overides the colon's and semi colon's normal meaning of 
+//"TYPE" when in the DICT or SEQstate.
+<DICT> ":" { System.out.print("MAPSTO ");                    }
+<DICT> ";" { System.out.print("SEMI\n"); yybegin(YYINITIAL); }
+<SEQ> ";"  { System.out.print("SEMI\n"); yybegin(YYINITIAL); }
+
+/* SEPARATORS - can be matched in any state. */
+"{" { System.out.print("LBRACE ");   }
+"}" { System.out.print("RBRACE ");   }
+"[" { System.out.print("LBRACKET "); }
+"]" { System.out.print("RBRACKET "); }
+";" { System.out.print("SEMI\n");    }
+":"	{ System.out.print("TYPE ");     }
+"(" { System.out.print("LPAREN ");   }
+")" { System.out.print("RPAREN ");   }
+
+/* HANDLING WHITESPACE AND COMMENTS - apply to any state. */
+{WhiteSpace} { /* IGNORE WHITESPACE */ }
+{Comment}    { /* IGNORE COMMENTS */   }
 
 
 <YYINITIAL> {
-	/* Operators */
+
+	/* OPERATORS - Probably could be declared outside this state - 
+	 * potentially something to look at. */
 	"/"   { System.out.print("DIVIDE "); }
-	"*"   { System.out.print("TIMES "); }
-	"-"   { System.out.print("MINUS "); }
-	"+"   { System.out.print("PLUS "); }
-	"^"   { System.out.print("POW ");}
+	"*"   { System.out.print("TIMES ");  }
+	"-"   { System.out.print("MINUS ");  }
+	"+"   { System.out.print("PLUS ");   }
+	"^"   { System.out.print("POW ");    }
 
-	","   { System.out.print("COMMA "); }
-	":="  { System.out.print("ASSIGN "); }
-	"="   { System.out.print("EQ "); }
-	"::"  { System.out.print("CONCAT "); }
-	"!="  { System.out.print("NOTEQ"); }
-	"<"   { System.out.print("LANGLE "); }
-	">"   { System.out.print("RANGLE "); }
-	"<="  { System.out.print("LTEQ "); }
-	"&&"  { System.out.print("AND "); }
-	"||"  { System.out.print("OR "); }
-	"!"   { System.out.print("NOT "); }
+	":="  { System.out.print("ASSIGN ");  }
+	"="   { System.out.print("EQ ");      }
+	"::"  { System.out.print("CONCAT ");  }
+	"!="  { System.out.print("NOTEQ");    }
+	"<"   { System.out.print("LTHAN ");   }
+	"<="  { System.out.print("LTEQ ");    }
+	">"   { System.out.print("GTHAN ");   }
+	">="  { System.out.print("GTEQ");     }
+	"&&"  { System.out.print("AND ");     }
+	"||"  { System.out.print("OR ");      }
+	"!"   { System.out.print("NOT ");     }
 	"=>"  { System.out.print("IMPLIES "); }
-//  "\""  { yybegin(STRING);}
-	"len" { System.out.print("LEN "); }
+    //  "\""  { yybegin(STRING);}
+	"len" { System.out.print("LEN ");     }
 
+	/* Deal with Dictionaries */
+	{Dictionary}             { yybegin(DICT); }
 
-	/* Separators */
-	";" { System.out.print("SEMI\n"); }
-	":"	{ System.out.print("TYPE "); }
-	"(" { System.out.print("LPAREN"); }
-	")" { System.out.print("RPAREN"); }
-	"{" { System.out.println("LBRACE"); }
-	"}" { System.out.println("RBRACE"); }
-	"[" { System.out.print("LBRACKET "); }
-	"]" { System.out.print("RBRACKET "); }
+	/* Deal with Sequences */
+	{Sequence}               { yybegin(SEQ);  }
 
-	{Dictionary}             { System.out.print(yytext() + " "); }
-
-	{Sequence}               { System.out.print(yytext() + " "); }
-
-	{SequenceContent}        { System.out.print(yytext() + " "); }
-
-	{BooleanConstant}        { System.out.print("BOOLCONST "); }
+	/* Deal with individual type inputs */
+	{BooleanConstant}        { System.out.print("BOOLCONST ");   }
 
 	{Character}              { System.out.print(yytext() + " "); }
 
@@ -148,25 +159,68 @@ SeqTop = "[" [ [1-9] "/" [1-9] | [1-9] "_" [1-9] "/" [1-9] | 0 | [+-]?[0-9] | [+
 
 	{Float}                  { System.out.print(yytext() + " "); }
 
+	//Cannot handle rationals - just prints whitespace for some reason.
+	//{Rational}               { System.out.print(yytext() + " "); }
+
 	//Use this when actually returning an identifier.
 	//return symbol(sym.ID, new Integer(1));
 	{Identifier}             { System.out.print("ID(" + yytext() + ") "); }
-
-	{WhiteSpace}             { /* IGNORE WHITESPACE */ }
-
-	{Comment}                { System.out.println("Comment: " + yytext());}
 }
 
-[^]	{System.out.print(" | TODO: Error with char " + yytext() + " | ");}
+/* LEXICAL STATE TO HANDLE SEQUENCES */
+<SEQ> {
+
+	//Deal with operators. Assignment may be ableindependant of any state.
+	":="              { System.out.print("ASSIGN "); }
+	">"               { /* IGNORE */}
+	","               { System.out.print("COMMA ");  }
+
+	//Handle all possible contents of the sequence.
+	{Float}           { System.out.print("NUM(" + yytext() + ") ");               }
+
+	{Rational}        { System.out.print("NUM(" + yytext() + ") ");               }
+
+	{Character}       { System.out.print("CHAR(" + yytext() + ") ");              }
+
+	{Integer}         { System.out.print("NUM(" + yytext() + ") ");               }
+
+    {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");         }
+
+    //Determine the type of the sequence.
+	{Type}            { System.out.print("SEQ(" + yytext().toUpperCase() + ") "); }
+
+}
+
+/* LEXICAL STATE TO HANDLE DICTIONARIES */
+<DICT> {
+	
+	//Deal with operators. Assignment may be ableindependant of any state.
+	":="              { System.out.print("ASSIGN "); }
+	">"               { /* IGNORE */}
+    ":"               { System.out.print("MAPSTO "); }
+    ","               { System.out.print("COMMA ");  }
+
+    //Deal with all possible contents of the dictionary.
+	{Float}           { System.out.print("NUM(" + yytext() + ") ");                }
+
+	{Rational}        { System.out.print("NUM(" + yytext() + ") ");                }
+
+	{Character}       { System.out.print("CHAR(" + yytext() + ") ");               }
+
+	{Integer}         { System.out.print("NUM(" + yytext() + ") ");                }
+
+    {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");          }
+
+    //Determine the types of the dictionary.
+    {DictType}        { System.out.print("DICT(" + yytext().toUpperCase() + ") "); }
+
+}
 
 //[^] {throw new Error("Illegal character <" + yytext() + ">");}
 
 
-//TODO
-
-/* How are user-defined types dealt with, and where?
- * Floats with non-num characters (1.23a4)
- * State for seq
- * State for dict
- * Escape characters in a sequence of chars (string)
+/* TODO:
+ * -> How are user-defined types dealt with, and where?
+ * -> Floats with non-num characters (1.23a4)
+ * -> Escape characters in a sequence of chars (string)
  */
