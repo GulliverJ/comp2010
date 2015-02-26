@@ -58,12 +58,7 @@ TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
 EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
 Comment            = {TraditionalComment} | {EndOfLineComment}
 
-Type               = "bool" | "int" | "char" | "rat" | "top" | "float" 
-//{Identifier}
-//TypeInput          = {Integer} | {BooleanConstant} | {Character} | {Float} | {Rational}
-
 Dictionary         = "dict"
-//DictType           = {Type} [^] {Type} | {Type} [^][^] {Type} | {Type} [^][^][^] {Type}
 Sequence           = "seq"
 StringCont         = [^\r\n\"\\]
 
