@@ -162,7 +162,7 @@ StringCont         = [^\r\n\"\\]
 	{Dictionary}             { System.out.print("DICT "); yybegin(DICT); }
 
 	/* Deal with Sequences */
-	{Sequence}               { yybegin(SEQ);  }
+	{Sequence}               { System.out.print("SEQ "); yybegin(SEQ); }
 
 	/* Deal with individual type inputs */
 	{BooleanConstant}        { System.out.print("BOOLCONST ");   }
@@ -205,7 +205,8 @@ StringCont         = [^\r\n\"\\]
 
 	//Deal with operators. Assignment may be ableindependant of any state.
 	":="              { System.out.print("ASSIGN "); }
-	">"               { /* IGNORE */}
+	"<"               { System.out.print("LANGLE "); }
+	">"               { System.out.print("RANGLE "); }
 	","               { System.out.print("COMMA ");  }
 
 	//Handle all possible contents of the sequence.
@@ -219,9 +220,6 @@ StringCont         = [^\r\n\"\\]
 
     {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");         }
 
-    //Determine the type of the sequence.
-	//{Type}            { System.out.print("SEQ(" + yytext().toUpperCase() + ") "); }
-
 }
 
 /* LEXICAL STATE TO HANDLE DICTIONARIES */
@@ -231,7 +229,6 @@ StringCont         = [^\r\n\"\\]
 	":="              { System.out.print("ASSIGN "); }
 	"<"               { System.out.print("LANGLE "); }
 	">"               { System.out.print("RANGLE "); }
-    //":"               { System.out.print("MAPSTO "); }
     ","               { System.out.print("COMMA ");  }
 
     //Deal with all possible contents of the dictionary.
