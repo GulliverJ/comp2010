@@ -182,8 +182,9 @@ StringCont         = [^\r\n\"\\]
 
 	//Deal with operators. Assignment may be independant of any state.
 	":="              { return symbol(sym.ASSIGN); }
-	">"               { /* IGNORE */}
-	","               { return symbol(sym.COMMA); }
+	"<"               { return symbol(sym.LANGLE); }
+	">"               { return symbol(sym.RANGLE); }
+    ","               { return symbol(sym.COMMA);  }
 
 	//Handle all possible contents of the sequence.
 	{Float}           { return symbol(sym.NUM, new Float(yytext()); }
