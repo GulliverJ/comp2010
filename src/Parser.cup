@@ -40,12 +40,10 @@ terminal PLUS, SEMI, CHAR, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI
 non terminal            S, decList, dec, funcDef, main, params, moreParams, returnType, type;
 non terminal            typeDef, typeFields, moreTypeFields, aliasDec, varDec, varInit, varAssignment;
 non terminal            expression, arithExpression, boolExpression;
-non terminal            body, statement, statementPrime, statementList, controlFlow;
-
-/* DEBUG READ LINE BELOW!!! */
-/* DON'T FORGET TO USE 'non terminal Integer' etc. non terminal Integer    expr; */
+non terminal            body, statement, moreStatements, statementList, controlFlow;
 
 /* Precedences */
+precedence left COLON;
 precedence left ASSIGN;
 precedence left OR;
 precedence left AND;
@@ -60,7 +58,7 @@ precedence left PLUS;
 precedence left DIV;
 precedence left MULT;
 precedence left POW;
-precedence right ID;
+precedence left ID;
 
 
 /* The grammar rules */
@@ -129,13 +127,13 @@ varInit ::=
 varAssignment ::= ID ASSIGN expression          {: System.out.println("HOWDY");:}
                 ;
 
-body ::= decList statementList                  {: System.out.println("matched body");:}
+body ::= decList statementList               {: System.out.println("matched body");:}
        ;
 
-statementList ::= statement statementPrime      {: System.out.println("statement list");:}
+statementList ::= statement moreStatements      {: System.out.println("statement list");:}
                 ;
 
-statementPrime ::=
+moreStatements ::=
                  | statementList
                  ;
 

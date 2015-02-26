@@ -1,8 +1,9 @@
 fdef foo () {
 	# DecList
-	jack : int := 100;
+	#jack : int := 100;
+	shubham : bool;
 	# StatementList
-	2+5;
+	shubham := T;
 
 };
 
