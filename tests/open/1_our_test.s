@@ -1,11 +1,14 @@
-fdef foo () {
+#fdef foo () {
 	# DecList
 	#jack : int := 100;
-	shubham : bool;
+#	shubham : bool;
 	# StatementList
-	shubham := T;
+#	shubham := T;
 
-};
+#};
 
+jackSequence : seq<char>;
+
+sequenceChurch : int := 10;
 
 main

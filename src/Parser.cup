@@ -41,7 +41,8 @@ non terminal            S, decList, dec, funcDef, main, params, moreParams, retu
 non terminal            typeDef, typeFields, moreTypeFields, aliasDec, varDec, varInit, varAssignment;
 non terminal            expression, arithExpression, boolExpression;
 non terminal            body, statement, moreStatements, statementList, controlFlow;
-non terminal            aggregateType, dictType, seqLiteral, dictLiteral, keyValPair, keyValPairList, seqValList;
+non terminal            aggregateType, dictType, seqLiteral, dictLiteral;
+non terminal            keyValPair, keyValPairList, moreKeyPairs, seqValList, moreSeqVals;
 
 /* Precedences */
 precedence left OR;
@@ -159,9 +160,13 @@ expression ::= ID
 dictLiteral ::= LBRACE keyValPairList RBRACE
               ;
 
-keyValPairList ::= keyValPair
-                 | keyValPair COMMA keyValPairList
+keyValPairList ::= 
+                 | keyValPair moreKeyPairs
                  ;
+
+moreKeyPairs ::= 
+               | COMMA keyValPair moreKeyPairs
+               ;
 
 keyValPair ::= type COLON type
              | dictLiteral COLON type
@@ -172,9 +177,13 @@ keyValPair ::= type COLON type
 seqLiteral ::= LBRACKET seqValList RBRACKET
              ;
 
-seqValList ::= expression
-             | expression COMMA seqValList
+seqValList ::= 
+             | expression moreSeqVals
              ;
+
+moreSeqVals ::= 
+              | COMMA expression moreSeqVals
+              ;
 
 aggregateType ::= DICT LANGLE dictType RANGLE
                 | SEQ LANGLE type RANGLE
