@@ -45,7 +45,7 @@ Integer          = 0 | -* [1-9][0-9]*								// Added -* here to match, e.g. ---
 Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
 Rational         = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[1-9][0-9]*
 BooleanConstant  = "T" | "F"
-Character        = "'" [A-Z] "'" | "'" [a-z] "'"
+Character        = "'" . "'"    // Altered from "'" [A-Z] "'" | "'" [a-z] "'" to include '0' ' ' etc.
 
 Identifier       = [:jletter:] [:jletterdigit:]*
 InputCharacter   = [^\r\n]
@@ -140,7 +140,7 @@ StringCont         = [^\r\n\"\\]
 
 	{BooleanConstant}        { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
 
-	{Character}              { return symbol(sym.CHAR, yytext().charAt(0)); }
+	{Character}              { return symbol(sym.CHARCONST, yytext().charAt(0)); }
 
 	{Integer}                { return symbol(sym.NUM, new Integer(yytext())); }
 
@@ -181,7 +181,7 @@ StringCont         = [^\r\n\"\\]
 
 	{Rational}        { return symbol(sym.NUM); }
 
-	{Character}       { return symbol(sym.CHAR, yytext().charAt(0)); }
+	{Character}       { return symbol(sym.CHARCONST, yytext().charAt(0)); }
 
 	{Integer}         { return symbol(sym.NUM, new Integer(yytext())); }
 
@@ -206,7 +206,7 @@ StringCont         = [^\r\n\"\\]
 
 	{Rational}        { return symbol(sym.NUM); }
 
-	{Character}       { return symbol(sym.CHAR, yytext().charAt(0)); }
+	{Character}       { return symbol(sym.CHARCONST, yytext().charAt(0)); }
 
 	{Integer}         { return symbol(sym.NUM, new Integer(yytext())); }
 

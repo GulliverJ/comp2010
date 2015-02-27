@@ -34,7 +34,7 @@ parser code {:
 :};
 
 
-terminal PLUS, SEMI, CHAR, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS, STRING, MAPSTO, ERROR;
+terminal PLUS, SEMI, CHAR, CHARCONST, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS, STRING, MAPSTO, ERROR;
 
 /* Non terminals */
 non terminal            S, decList, dec, funcDef, main, params, moreParams, returnType, type;
@@ -150,7 +150,8 @@ controlFlow ::= WHILE LPAREN expression RPAREN DO body OD
 expression ::= ID                   
              | arithExpression              
              | boolExpression               
-             | BOOLCONST                    
+             | BOOLCONST
+             | CHARCONST                  
              | NUM                          
              | STRING
              | dictLiteral

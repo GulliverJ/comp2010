@@ -7,8 +7,8 @@
 
 #};
 
-#ohria : dict<int, top>;
-
+ohria : dict<int, top>;
+shubs : seq<char> := ['s','h','u','b','s'];
 
 
 main
