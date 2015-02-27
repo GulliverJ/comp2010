@@ -43,7 +43,7 @@ WhiteSpace       = {LineTerminator} | [ \t\f]
 
 Integer          = 0 | -* [1-9][0-9]*								// Added -* here to match, e.g. ----9
 Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
-Rational         = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[1-9][0-9]*
+Rational         = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[0-9]+
 BooleanConstant  = "T" | "F"
 Character        = "'" . "'"    // Altered from "'" [A-Z] "'" | "'" [a-z] "'" to include '0' ' ' etc.
 
@@ -51,7 +51,7 @@ Identifier       = [:jletter:] [:jletterdigit:]*
 InputCharacter   = [^\r\n]
 
 TraditionalComment = "/#" [^#]+ "#/" | "/#" "#"+ "/"
-EndOfLineComment   = "#" {InputCharacter}* {LineTerminator}?
+EndOfLineComment   = [#]+ {InputCharacter}* {LineTerminator}?
 Comment            = {TraditionalComment} | {EndOfLineComment}
 
 Dictionary         = "dict"
@@ -146,7 +146,7 @@ StringCont         = [^\r\n\"\\]
 
 	{Float}                  { return symbol(sym.NUM, new Float(yytext())); }
 	
-	{Rational}               { return symbol(sym.RAT); }
+	{Rational}               { return symbol(sym.NUM); }
 
 	{Identifier}             { return symbol(sym.ID, new Integer(1)); }
 }
@@ -171,6 +171,7 @@ StringCont         = [^\r\n\"\\]
 <SEQ> {
 	//Deal with operators. Assignment may be independant of any state.
 	";"               { yybegin(YYINITIAL); return symbol(sym.SEMI); }
+	":"               { return symbol(sym.MAPSTO); }
 	":="              { return symbol(sym.ASSIGN); }
 	"<"               { return symbol(sym.LANGLE); }
 	">"               { return symbol(sym.RANGLE); }
@@ -211,6 +212,8 @@ StringCont         = [^\r\n\"\\]
 	{Integer}         { return symbol(sym.NUM, new Integer(yytext())); }
 
     {BooleanConstant} { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
+
+    {Identifier}      { return symbol(sym.ID, new Integer(1)); }
 }
 
 [^] { return symbol(sym.ERROR); }

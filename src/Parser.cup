@@ -63,20 +63,23 @@ precedence left ID;
 
 /* The grammar rules */
 
-S         ::= decList main decList          {: System.out.println("matched S");:}
+S         ::= decList main decList          {: System.out.println("Successful Test");:}
             ;
 
-decList   ::=                               {: System.out.println("empty decList");:}
-            | dec decList                   {: System.out.println("non-empty decList");:}
+main      ::= MAIN                         {: System.out.println("Main");:}
             ;
 
-dec       ::= funcDef                       {: System.out.println("dec -> funcDef");:} 
-            | typeDef                       {: System.out.println("dec -> typeDef");:} 
-            | aliasDec                      {: System.out.println("dec -> funcDef");:} 
-            | varDec                        {: System.out.println("dec -> varDec");:} 
+decList   ::=                               {: System.out.println("End of decList");:}
+            | dec decList                   
             ;
 
-funcDef   ::= FDEF ID LPAREN params RPAREN LBRACE body RBRACE returnType SEMI {: System.out.println("funcDef cool");:}
+dec       ::= funcDef                       {: System.out.println("Function Definition");:} 
+            | typeDef                       {: System.out.println("Type Definition");:} 
+            | aliasDec                      {: System.out.println("Alias Declaration");:} 
+            | varDec                        {: System.out.println("Variable Declaration");:} 
+            ;
+
+funcDef   ::= FDEF ID LPAREN params RPAREN LBRACE body RBRACE returnType SEMI
             ;
 
 params    ::= 
@@ -100,9 +103,6 @@ type       ::= FLOAT
              | aggregateType
              ;
 
-main      ::= MAIN                         {: System.out.println("matched main");:}
-            ;
-
 typeDef   ::= TDEF ID LBRACE typeFields RBRACE SEMI
             ;
 
@@ -120,24 +120,24 @@ varDec ::= ID COLON type varInit SEMI
          ;
 
 varInit ::=
-          | ASSIGN expression
+          | ASSIGN expression               {: System.out.print("(Initialised) ");:}
           ;
 
-varAssignment ::= ID ASSIGN expression          {: System.out.println("HOWDY");:}
+varAssignment ::= ID ASSIGN expression      {: System.out.println("Variable Assignment");:}
                 ;
 
-body ::= decList statementList               {: System.out.println("matched body");:}
+body ::= decList statementList     
        ;
 
-statementList ::= statement moreStatements      {: System.out.println("statement list");:}
+statementList ::= statement moreStatements
                 ;
 
 moreStatements ::=
                  | statementList
                  ;
 
-statement ::= varAssignment SEMI                {: System.out.println("statement var assignment");:}
-            | controlFlow                       {: System.out.println("statement controlFlow");:}
+statement ::= varAssignment SEMI                
+            | controlFlow                       
             ;
 
 controlFlow ::= WHILE LPAREN expression RPAREN DO body OD
@@ -169,10 +169,7 @@ moreKeyPairs ::=
                | COMMA keyValPair moreKeyPairs
                ;
 
-keyValPair ::= type MAPSTO type
-             | dictLiteral MAPSTO type
-             | type MAPSTO dictLiteral
-             | dictLiteral MAPSTO dictLiteral
+keyValPair ::= expression MAPSTO expression
              ;
 
 seqLiteral ::= LBRACKET seqValList RBRACKET
