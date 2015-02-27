@@ -27,7 +27,7 @@ parser code {:
         System.exit(1);
     }
     public void syntax_error(Symbol current_token) {
-        System.out.println(current_token.toString());
+        System.out.println("failed symbol: " + current_token.toString());
         report_error("Syntax error at line " + (current_token.left+1) + ", column "+ current_token.right, null);
     }
 
@@ -168,10 +168,10 @@ moreKeyPairs ::=
                | COMMA keyValPair moreKeyPairs
                ;
 
-keyValPair ::= type COLON type
-             | dictLiteral COLON type
-             | type COLON dictLiteral
-             | dictLiteral COLON dictLiteral
+keyValPair ::= type MAPSTO type
+             | dictLiteral MAPSTO type
+             | type MAPSTO dictLiteral
+             | dictLiteral MAPSTO dictLiteral
              ;
 
 seqLiteral ::= LBRACKET seqValList RBRACKET

@@ -134,9 +134,9 @@ StringCont         = [^\r\n\"\\]
     /* String Literal */
 	\"    { yybegin(STRING); string.setLength(0); }
 
-	{Dictionary}             { yybegin(DICT); }
+	{Dictionary}             { yybegin(DICT); return symbol(sym.DICT); }
 
-	{Sequence}               { yybegin(SEQ); }
+	{Sequence}               { yybegin(SEQ); return symbol(sym.SEQ); }
 
 	{BooleanConstant}        { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
 

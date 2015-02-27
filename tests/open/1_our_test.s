@@ -7,8 +7,6 @@
 
 #};
 
-jackSequence : seq<char>;
-
-sequenceChurch : int := 10;
+#ohria : dict<int, top>;
 
 main
