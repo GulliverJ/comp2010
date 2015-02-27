@@ -16,11 +16,12 @@ myRat : rat := 5_3/2;
 myDict : dict<top,top> := { 's' : jack };
 mySeq : seq<top> := [1,2,'A', variable];
 
+nestedDict : dict<int, top> := { 's' : 2, { 2.532435 : 3 } : jack, 120 : T };
 
-noBug : dict<top, top> := { 's' : 2, 120 : T};
-ohria : dict<int, top> := { 's' : 2, { 2.532435 : 3 } : jack, 120 : T };
-
-shubs : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }, "jack"];
-
+nestedSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }];
 
 main
+
+# Lexer can't interpet strings inside SEQ or DICT state
+bugDict : dict<int, char> := { 1 : "BUG" };
+bugSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }, "BUG"];
