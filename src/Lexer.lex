@@ -130,6 +130,7 @@ StringCont         = [^\r\n\"\\]
 	"||"  { return symbol(sym.OR); }
 	"!"   { return symbol(sym.NOT); }
 	"len" { return symbol(sym.LEN); }
+	","	  { return symbol(sym.COMMA); }
 
     /* String Literal */
 	\"    { yybegin(STRING); string.setLength(0); }

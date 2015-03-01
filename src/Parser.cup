@@ -43,6 +43,7 @@ non terminal            expression, arithExpression, boolExpression;
 non terminal            body, statement, moreStatements, statementList, controlFlow;
 non terminal            aggregateType, dictType, seqLiteral, dictLiteral;
 non terminal            keyValPair, keyValPairList, moreKeyPairs, seqValList, moreSeqVals;
+non terminal            alphaBody, alphaDec, debugVarDec, type_or_alias;
 
 /* Precedences */
 precedence left OR;
@@ -69,21 +70,21 @@ S         ::= decList main decList          {: System.out.println("Successful Te
 main      ::= MAIN                         {: System.out.println("Main");:}
             ;
 
-decList   ::=                               {: System.out.println("End of decList");:}
+decList   ::=                               {: System.out.println("\n\t^ End of decList");:}
             | dec decList                   
             ;
 
-dec       ::= funcDef                       {: System.out.println("Function Definition");:} 
-            | typeDef                       {: System.out.println("Type Definition");:} 
+dec       ::= funcDef                       {: System.out.println("\n\t^ End Of Function Definition");:} 
+            | typeDef                       {: System.out.println("End Of Type Definition");:} 
             | aliasDec                      {: System.out.println("Alias Declaration");:} 
             | varDec                        {: System.out.println("Variable Declaration");:} 
             ;
 
-funcDef   ::= FDEF ID LPAREN params RPAREN LBRACE body RBRACE returnType SEMI
+funcDef   ::= FDEF ID LPAREN params RPAREN LBRACE alphaBody RBRACE returnType SEMI
             ;
 
 params    ::= 
-            | ID COLON type moreParams
+            | ID COLON type_or_alias moreParams
             ;
 
 moreParams ::=
@@ -91,7 +92,7 @@ moreParams ::=
              ;
 
 returnType ::=
-             | COLON type
+             | COLON type_or_alias
              ;
 
 type       ::= FLOAT 
@@ -106,8 +107,12 @@ type       ::= FLOAT
 typeDef   ::= TDEF ID LBRACE typeFields RBRACE SEMI
             ;
 
-typeFields ::= ID COLON type moreTypeFields
+typeFields ::= ID COLON type_or_alias moreTypeFields
              ;
+
+type_or_alias ::= type
+           | ID
+           ;
 
 moreTypeFields ::=
                  | COMMA typeFields
@@ -126,6 +131,21 @@ varInit ::=
 varAssignment ::= ID ASSIGN expression      {: System.out.println("Variable Assignment");:}
                 ;
 
+
+alphaBody ::= alphaDec alphaBody
+            | debugVarDec alphaBody
+            | statementList
+            ;
+
+alphaDec ::= funcDef
+           | typeDef
+           | aliasDec
+           ;
+
+/*  Necessary for printing out var dec in correct place  */
+debugVarDec ::= varDec     {: System.out.println("Variable Declaration");:} 
+              ;
+
 body ::= decList statementList     
        ;
 
@@ -137,14 +157,14 @@ moreStatements ::=
                  ;
 
 statement ::= varAssignment SEMI                
-            | controlFlow                       
+            | controlFlow                           
             ;
 
 controlFlow ::= WHILE LPAREN expression RPAREN DO body OD
               | FORALL LPAREN expression IN expression RPAREN DO body OD
               | IF LPAREN expression RPAREN THEN body FI
               | IF LPAREN expression RPAREN THEN body ELSE body FI
-              | RETURN expression
+              | RETURN expression SEMI                                        {: System.out.println("Return Statement");:}
               ;
 
 expression ::= ID                   
@@ -184,10 +204,10 @@ moreSeqVals ::=
               ;
 
 aggregateType ::= DICT LANGLE dictType RANGLE
-                | SEQ LANGLE type RANGLE
+                | SEQ LANGLE type_or_alias RANGLE
                 ;
 
-dictType ::= type COMMA type
+dictType ::= type_or_alias COMMA type_or_alias
            ;
 
 arithExpression ::= expression PLUS expression
