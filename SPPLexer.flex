@@ -77,12 +77,12 @@ StringCont         = [^\r\n\"\\]
 /* LEXICAL RULES */
 
 /* KEYWORDS */
-"char"    { System.out.print("CHAR ");     }
-"bool"    { System.out.print("BOOL ");     }
-"int"     { System.out.print("INT ");      }
-"rat"     { System.out.print("RAT ");      }
-"float"   { System.out.print("FLOAT ");    }
-"top"     { System.out.print("TOP ");      }
+"char "    { System.out.print("CHAR ");     }
+"bool "    { System.out.print("BOOL ");     }
+"int "     { System.out.print("INT ");      }
+"rat "     { System.out.print("RAT ");      }
+"float "   { System.out.print("FLOAT ");    }
+"top "     { System.out.print("TOP ");      }
 <YYINITIAL> "print"   { System.out.print("PRINT ");    }
 <YYINITIAL> "alias"   { System.out.print("ALIAS ");    }
 <YYINITIAL> "fdef"    { System.out.print("FUNCTION "); }
@@ -93,7 +93,7 @@ StringCont         = [^\r\n\"\\]
 /* CONTROL FLOW */
 <YYINITIAL> "if"      { System.out.print("IF ");     }
 <YYINITIAL> "then"    { System.out.print("THEN ");   }
-<YYINITIAL> "else"    { System.out.print("THEN ");   }
+<YYINITIAL> "else"    { System.out.print("ELSE ");   }
 <YYINITIAL> "fi"      { System.out.print("FI\n");    }
 <YYINITIAL> "while"   { System.out.print("WHILE ");  }
 <YYINITIAL> "do"      { System.out.print("DO ");     }
@@ -160,15 +160,15 @@ StringCont         = [^\r\n\"\\]
 	{Sequence}               { System.out.print("SEQ "); yybegin(SEQ); }
 
 	/* Deal with individual type inputs */
-	{BooleanConstant}        { System.out.print("BOOLCONST ");   }
+	{BooleanConstant}        { System.out.print("BOOLCONST(" + yytext() + ") ");   }
 
-	{Character}              { System.out.print(yytext() + " "); }
+	{Character}              { System.out.print("CHAR(" + yytext() + ") "); }
 
 	//Use this when actually returning Integers.
 	//return symbol(sym.NUM, new Integer(yytext()));
-	{Integer}                { System.out.print(yytext() + " "); }
+	{Integer}                { System.out.print("NUM(" + yytext() + ") "); }
 
-	{Float}                  { System.out.print(yytext() + " "); }
+	{Float}                  { System.out.print("NUM(" + yytext() + ") "); }
 
 	//Cannot handle rationals - just prints whitespace for some reason.
 	//{Rational}             { System.out.print(yytext() + " "); }
@@ -181,7 +181,7 @@ StringCont         = [^\r\n\"\\]
 <STRING> {
 
 							//yybegin(YYINITIAL); return symbol(SEQ<CHAR>, string.toString());
-    \"                       { yybegin(YYINITIAL); System.out.print("SEQ<CHAR> " + string.toString() + " "); }
+    \"                       { yybegin(YYINITIAL); System.out.print(string.toString() + " "); } //Maybe return SEQ<char> rather than the string itself.
 
 	{StringCont}+            { string.append(yytext()); }
 
