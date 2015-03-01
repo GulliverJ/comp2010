@@ -43,7 +43,7 @@ non terminal            expression, arithExpression, boolExpression;
 non terminal            body, statement, moreStatements, statementList, controlFlow;
 non terminal            aggregateType, dictType, seqLiteral, dictLiteral;
 non terminal            keyValPair, keyValPairList, moreKeyPairs, seqValList, moreSeqVals;
-non terminal            alphaBody, alphaDec, debugVarDec, type_or_alias;
+non terminal            alphaBody, alphaDec, debugVarDec, type_or_alias, returnStatement;
 
 /* Precedences */
 precedence left OR;
@@ -64,10 +64,10 @@ precedence left ID;
 
 /* The grammar rules */
 
-S         ::= decList main decList          {: System.out.println("Successful Test");:}
+S         ::= decList main decList          {: System.out.println("-----------------\nSuccessful Test\n-----------------");:}
             ;
 
-main      ::= MAIN                         {: System.out.println("Main");:}
+main      ::= MAIN LBRACE body RBRACE SEMI       {: System.out.println("Main");:}
             ;
 
 decList   ::=                               {: System.out.println("\n\t^ End of decList");:}
@@ -121,7 +121,7 @@ moreTypeFields ::=
 aliasDec ::= ALIAS type ID SEMI
            ;
 
-varDec ::= ID COLON type varInit SEMI
+varDec ::= ID COLON type_or_alias varInit SEMI
          ;
 
 varInit ::=
@@ -164,8 +164,12 @@ controlFlow ::= WHILE LPAREN expression RPAREN DO body OD
               | FORALL LPAREN expression IN expression RPAREN DO body OD
               | IF LPAREN expression RPAREN THEN body FI
               | IF LPAREN expression RPAREN THEN body ELSE body FI
-              | RETURN expression SEMI                                        {: System.out.println("Return Statement");:}
+              | RETURN returnStatement SEMI                               {: System.out.println("Return Statement");:}
               ;
+
+returnStatement ::= 
+                  | expression
+                  ;
 
 expression ::= ID                   
              | arithExpression              
@@ -218,6 +222,8 @@ arithExpression ::= expression PLUS expression
                   ;
 
 boolExpression ::= NOT expression
+                 | expression LANGLE expression
+                 | expression LTEQ expression
                  | expression EQ expression
                  | expression NOTEQ expression
                  | expression AND expression

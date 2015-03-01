@@ -37,4 +37,7 @@ nestedDict : dict<int, top> := { 's' : 2, { 2.532435 : 3 } : jack, 120 : T };
 
 nestedSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }];
 
-main
+main {
+
+return i < 10;
+};

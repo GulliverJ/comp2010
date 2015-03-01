@@ -1,6 +1,6 @@
-# Lexer and Parser
+# COMP2010 Lexer and Parser
 
-Please your Lexer.lex and Parser.cup files into the src subdirectory.
+Place your Lexer.lex and Parser.cup files into the src subdirectory.
 
 To build, issue `make`.
 
