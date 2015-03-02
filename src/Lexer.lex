@@ -171,7 +171,7 @@ StringCont         = [^\r\n\"\\]
 <SEQ> {
 	//Deal with operators. Assignment may be independant of any state.
 	";"               { yybegin(YYINITIAL); return symbol(sym.SEMI); }
-	":"               { return symbol(sym.MAPSTO); }
+	":"               { return symbol(sym.COLON); }
 	":="              { return symbol(sym.ASSIGN); }
 	"<"               { return symbol(sym.LANGLE); }
 	">"               { return symbol(sym.RANGLE); }
@@ -184,7 +184,7 @@ StringCont         = [^\r\n\"\\]
 
 	{Character}       { return symbol(sym.CHARCONST, yytext().charAt(0)); }
 
-	{Integer}         { System.out.println("INT FOUND"); return symbol(sym.NUM, new Integer(yytext())); }
+	{Integer}         { return symbol(sym.NUM, new Integer(yytext())); }
 
     {BooleanConstant} { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
 
@@ -196,7 +196,7 @@ StringCont         = [^\r\n\"\\]
 	
 	//Deal with operators. Assignment may be ableindependant of any state.
 	";"               { yybegin(YYINITIAL); return symbol(sym.SEMI); }
-	":"               { return symbol(sym.MAPSTO); }
+	":"               { return symbol(sym.COLON); }
 	":="              { return symbol(sym.ASSIGN); }
 	"<"               { return symbol(sym.LANGLE); }
 	">"               { return symbol(sym.RANGLE); }
