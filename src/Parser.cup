@@ -172,7 +172,7 @@ returnStatement ::=
                   ;
 
 expression ::= ID                   
-             | arithExpression              
+             | arithExpression            
              | boolExpression               
              | BOOLCONST
              | CHARCONST                  

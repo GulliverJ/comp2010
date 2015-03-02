@@ -26,7 +26,8 @@ fdef foo (a:int, b:float) {
 	return T;
 
 };
-
+myFirstInt : int := 9;
+mySecondInt : int := --9;
 
 myRat : rat := 5_3/2;
 nonInit : top;
