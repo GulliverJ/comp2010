@@ -2,7 +2,7 @@
 // Group 10
 // Coursework 1
 
-// Version 0.4 - Synchronizing files
+// Version 0.5 - Synchronizing files
 
 
 /* NEEDED FOR PARSER INTERFACING */
