@@ -27,6 +27,7 @@ parser code {:
         System.exit(1);
     }
     public void syntax_error(Symbol current_token) {
+        syntaxErrors = true;
         System.out.println("failed symbol: " + current_token.toString());
         report_error("Syntax error at line " + (current_token.left+1) + ", column "+ current_token.right, null);
     }
@@ -70,7 +71,7 @@ S         ::= decList main decList          {: System.out.println("-------------
 main      ::= MAIN LBRACE body RBRACE SEMI       {: System.out.println("Main");:}
             ;
 
-decList   ::=                               {: System.out.println("\n\t^ End of decList");:}
+decList   ::=                               
             | dec decList                   
             ;
 

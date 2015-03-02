@@ -13,22 +13,21 @@ bugSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }, "BUG"];
 #/
 
 ### TEST STARTS HERE...  <-----------------------------------------
-
-# FUNCTIONS working as of the "alphaBody" update
+/#
 fdef foo (a:int, b:float) {
-	# DecList
+	
 	shubham : bool := T;
 	
 	fdef marge(a:int, b:float) { return T; } : int;
 	tdef family { mother:person, father:person, children:seq<person> };
 	alias seq<char> string;
-	# StatementList
+	
 	return T;
 
 };
+
 myFirstInt : int := 9;
 mySecondInt : int := --9;
-
 myRat : rat := 5_3/2;
 nonInit : top;
 myDict : dict<top,top> := { 's' : jack };
@@ -37,8 +36,11 @@ mySeq : seq<top> := [1,2,'A', variable];
 nestedDict : dict<int, top> := { 's' : 2, { 2.532435 : 3 } : jack, 120 : T };
 
 nestedSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }];
+#/
 
 main {
-
-return i < 10;
+	
+	x : int := 10;
+	y : int := --10;
+	return thePrecious;
 };
