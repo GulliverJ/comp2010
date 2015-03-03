@@ -78,6 +78,7 @@ StringCont         = [^\r\n\"\\]
 "float"               { return symbol(sym.FLOAT); }
 "top"                 { return symbol(sym.TOP); }
 <YYINITIAL> "print"   { return symbol(sym.PRINT); }
+<YYINITIAL> "read" 	  { return symbol(sym.READ);  }
 <YYINITIAL> "alias"   { return symbol(sym.ALIAS); }
 <YYINITIAL> "tdef"    { return symbol(sym.TDEF); }
 <YYINITIAL> "fdef"    { return symbol(sym.FDEF); }
@@ -128,7 +129,7 @@ StringCont         = [^\r\n\"\\]
 	"&&"  { return symbol(sym.AND); }
 	"||"  { return symbol(sym.OR); }
 	"!"   { return symbol(sym.NOT); }
-	"len" { return symbol(sym.LEN); }
+	"len" { return symbol(sym.ID); }
 	","	  { return symbol(sym.COMMA); }
 
     /* String Literal */

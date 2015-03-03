@@ -40,8 +40,10 @@ nestedSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }];
 
 main {
 	
-	x : int := (5+(45- 65));
+	x : int := (5+(myFunc((T || T), 2)));
 	y : int := -10;
+	read y;
+	print (function(haha,hahahhaa) / 12.5);
 	return thePrecious;
 };
 

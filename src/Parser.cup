@@ -35,12 +35,12 @@ parser code {:
 :};
 
 
-terminal PLUS, SEMI, CHAR, CHARCONST, BOOL, INT, RAT, FLOAT, TOP, PRINT, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS, STRING, ERROR;
+terminal PLUS, SEMI, CHAR, CHARCONST, BOOL, INT, RAT, FLOAT, TOP, PRINT, READ, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, LEN, TDEF, ALIAS, STRING, ERROR;
 
 /* Non terminals */
 non terminal            S, decList, dec, funcDef, main, params, moreParams, returnType, type;
 non terminal            typeDef, typeFields, moreTypeFields, aliasDec, varDec, varInit, varAssignment;
-non terminal            expression, expressionMk2, arithExpression, boolExpression;
+non terminal            expression, arithExpression, boolExpression;
 non terminal            body, statement, moreStatements, statementList, controlFlow;
 non terminal            aggregateType, dictType, seqLiteral, dictLiteral;
 non terminal            keyValPair, keyValPairList, moreKeyPairs, seqValList, moreSeqVals;
@@ -126,10 +126,10 @@ varDec ::= ID COLON type_or_alias varInit SEMI
          ;
 
 varInit ::=
-          | ASSIGN expressionMk2               {: System.out.print("(Initialised) ");:}
+          | ASSIGN expression               {: System.out.print("(Initialised) ");:}
           ;
 
-varAssignment ::= ID ASSIGN expressionMk2      {: System.out.println("Variable Assignment");:}
+varAssignment ::= ID ASSIGN expression      {: System.out.println("Variable Assignment");:}
                 ;
 
 
@@ -159,25 +159,24 @@ moreStatements ::=
 
 statement ::= varAssignment SEMI                
             | controlFlow    
-            | functionCall SEMI                       
+            | functionCall SEMI
+            | READ ID SEMI
+            | PRINT expression SEMI                       
             ;
 
-controlFlow ::= WHILE LPAREN expressionMk2 RPAREN DO body OD
-              | FORALL LPAREN expressionMk2 IN expressionMk2 RPAREN DO body OD
-              | IF LPAREN expressionMk2 RPAREN THEN body FI
-              | IF LPAREN expressionMk2 RPAREN THEN body ELSE body FI
-              | RETURN returnStatement SEMI                               {: System.out.println("Return Statement");:}
+controlFlow ::= WHILE LPAREN expression RPAREN DO body OD
+              | FORALL LPAREN expression IN expression RPAREN DO body OD
+              | IF LPAREN expression RPAREN THEN body FI
+              | IF LPAREN expression RPAREN THEN body ELSE body FI
+              | RETURN returnStatement SEMI                                           {: System.out.println("Return Statement");:}
               ;
 
 returnStatement ::= 
-                  | expressionMk2
+                  | expression
                   ;
 
-expressionMk2 ::= LPAREN expressionMk2 RPAREN   {: System.out.println("Ya'll");:}
-                | expression
-                ;
-
-expression ::= ID                   
+expression ::= LPAREN expression RPAREN
+             | ID                   
              | arithExpression            
              | boolExpression               
              | BOOLCONST
@@ -194,14 +193,14 @@ functionCall ::= ID LPAREN csExpressions RPAREN
                ;
 
 csExpressions ::= 
-                | expressionMk2
-                | expressionMk2 COMMA csExpressions
+                | expression
+                | expression COMMA csExpressions
                 ;
 
-seqSlicing ::= ID LBRACKET expressionMk2 COLON expressionMk2 RBRACKET
-             | ID LBRACKET COLON expressionMk2 RBRACKET
-             | ID LBRACKET expressionMk2 COLON RBRACKET
-             | ID LBRACKET expressionMk2 RBRACKET
+seqSlicing ::= ID LBRACKET expression COLON expression RBRACKET
+             | ID LBRACKET COLON expression RBRACKET
+             | ID LBRACKET expression COLON RBRACKET
+             | ID LBRACKET expression RBRACKET
              ;
 
 dictLiteral ::= LBRACE keyValPairList RBRACE
@@ -215,18 +214,18 @@ moreKeyPairs ::=
                | COMMA keyValPair moreKeyPairs
                ;
 
-keyValPair ::= expressionMk2 COLON expressionMk2
+keyValPair ::= expression COLON expression
              ;
 
 seqLiteral ::= LBRACKET seqValList RBRACKET
              ;
 
 seqValList ::= 
-             | expressionMk2 moreSeqVals
+             | expression moreSeqVals
              ;
 
 moreSeqVals ::= 
-              | COMMA expressionMk2 moreSeqVals
+              | COMMA expression moreSeqVals
               ;
 
 aggregateType ::= DICT LANGLE dictType RANGLE
@@ -236,19 +235,19 @@ aggregateType ::= DICT LANGLE dictType RANGLE
 dictType ::= type_or_alias COMMA type_or_alias
            ;
 
-arithExpression ::= expressionMk2 PLUS expressionMk2
-                  | expressionMk2 SUBTRACT expressionMk2
-                  | expressionMk2 MULT expressionMk2
-                  | expressionMk2 DIV expressionMk2
-                  | expressionMk2 POW expressionMk2
+arithExpression ::= expression PLUS expression
+                  | expression SUBTRACT expression
+                  | expression MULT expression
+                  | expression DIV expression
+                  | expression POW expression
                   ;
 
-boolExpression ::= NOT expressionMk2
-                 | expressionMk2 LANGLE expressionMk2
-                 | expressionMk2 LTEQ expressionMk2
-                 | expressionMk2 EQ expressionMk2
-                 | expressionMk2 NOTEQ expressionMk2
-                 | expressionMk2 AND expressionMk2
-                 | expressionMk2 OR expressionMk2
-                 | expressionMk2 IMPLIES expressionMk2
+boolExpression ::= NOT expression
+                 | expression LANGLE expression
+                 | expression LTEQ expression
+                 | expression EQ expression
+                 | expression NOTEQ expression
+                 | expression AND expression
+                 | expression OR expression
+                 | expression IMPLIES expression
                  ;
