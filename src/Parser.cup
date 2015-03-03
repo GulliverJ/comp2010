@@ -190,6 +190,7 @@ expression ::= LPAREN expression RPAREN
              | seqSlicing   // also used for indexing
              | functionCall
              | inCheck
+             | SUBTRACT expression
              ;
 
 inCheck ::= expression IN expression
