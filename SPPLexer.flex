@@ -88,6 +88,7 @@ StringCont         = [^\r\n\"\\]
 "float"   { System.out.print("FLOAT ");    }
 "top"     { System.out.print("TOP ");      }
 <YYINITIAL> "print"   { System.out.print("PRINT ");    }
+<YYINITIAL> "read" 	  { System.out.print("READ ");  }
 <YYINITIAL> "alias"   { System.out.print("ALIAS ");    }
 <YYINITIAL> "fdef"    { System.out.print("FUNCTION "); }
 <YYINITIAL> "tdef"    { System.out.print("TYPEDEF ");  }
@@ -108,7 +109,6 @@ StringCont         = [^\r\n\"\\]
 
 //Overides the colon's and semi colon's normal meaning of 
 //"TYPE" when in the DICT or SEQstate.
-<DICTSEQ> ":" { System.out.print("MAPSTO ");                      }
 <DICTSEQ> ";" { System.out.print("SEMI\n"); yybegin(YYINITIAL);   }
 <DICTSEQ> ")" { System.out.print("RPAREN " ); yybegin(YYINITIAL); }
 <SEQ> ";"  { System.out.print("SEMI\n"); yybegin(YYINITIAL); }
@@ -118,7 +118,7 @@ StringCont         = [^\r\n\"\\]
 "}" { System.out.print("RBRACE ");   }
 "[" { System.out.print("LBRACKET "); }
 "]" { System.out.print("RBRACKET "); }
-":"	{ System.out.print("TYPE ");     }
+":"	{ System.out.print("COLON ");     }
 "(" { System.out.print("LPAREN ");   }
 ")" { System.out.print("RPAREN ");   }
 "," { System.out.print("COMMA ");  }
@@ -131,6 +131,7 @@ StringCont         = [^\r\n\"\\]
 "-"   { System.out.print("MINUS ");  }
 "+"   { System.out.print("PLUS ");   }
 "^"   { System.out.print("POW ");    }
+"."   { System.out.print("DOT ");     }
 
 /* HANDLING WHITESPACE AND COMMENTS - apply to any state. */
 {WhiteSpace} { /* IGNORE WHITESPACE */ }
@@ -151,7 +152,6 @@ StringCont         = [^\r\n\"\\]
 	"||"  { System.out.print("OR ");      }
 	"!"   { System.out.print("NOT ");     }
 	"=>"  { System.out.print("IMPLIES "); }
-	"."   { System.out.print("DOT ");     }
 
 	//This particular separator is not state independant.
 	";"   { System.out.print("SEMI\n");    }
