@@ -123,7 +123,7 @@ moreTypeFields ::=
                  | COMMA typeFields
                  ;
 
-aliasDec ::= type_or_alias type ID SEMI
+aliasDec ::= ALIAS type_or_alias ID SEMI
            ;
 
 varDec ::= ID COLON type_or_alias varInit SEMI

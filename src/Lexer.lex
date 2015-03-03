@@ -101,8 +101,8 @@ StringCont         = [^\r\n\"\\]
 
 //Overides the colon's and semi colon's normal meaning of 
 //"TYPE" when in the DICT or SEQstate.
-<DICTSEQ> ";" { return symbol(sym.SEMI); yybegin(YYINITIAL);   }
-<DICTSEQ> ")" { return symbol(sym.RPAREN); yybegin(YYINITIAL); }
+<DICTSEQ> ";" { yybegin(YYINITIAL); return symbol(sym.SEMI);   }
+<DICTSEQ> ")" { yybegin(YYINITIAL); return symbol(sym.RPAREN); }
 <SEQ> ";"  { return symbol(sym.RPAREN); yybegin(YYINITIAL); }
 
 /* SEPARATORS - can be matched in any state. */
