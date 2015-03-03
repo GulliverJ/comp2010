@@ -43,7 +43,8 @@ WhiteSpace         = {LineTerminator} | [ \t\f]
 
 Integer            = 0 | [1-9][0-9]*								// Added -* here to match, e.g. ----9
 Float              = (0| [1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
-Rational           = [1-9]* " "* "/" " "* [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [1-9][0-9]*
+Rational           = [1-9]+ " "* "/" " "* [1-9]+ | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [1-9][0-9]*
+
 BooleanConstant    = "T" | "F"
 Character          = "'" [A-Z] "'" | "'" [a-z] "'" | '0' | "'" [+-]?[1-9][0-9]* "'"
 
@@ -76,7 +77,7 @@ StringCont         = [^\r\n\"\\]
 /* Keywords */
 "char"                { return symbol(sym.CHAR); }
 "bool"                { return symbol(sym.BOOL); }
-"int"                 { return symbol(sym.INT); }
+"int"                 { System.out.println("INT found"); return symbol(sym.INT); }
 "rat"                 { return symbol(sym.RAT); }
 "float"               { return symbol(sym.FLOAT); }
 "top"                 { return symbol(sym.TOP); }
@@ -103,7 +104,6 @@ StringCont         = [^\r\n\"\\]
 //"TYPE" when in the DICT or SEQstate.
 <DICTSEQ> ";" { yybegin(YYINITIAL); return symbol(sym.SEMI);   }
 <DICTSEQ> ")" { yybegin(YYINITIAL); return symbol(sym.RPAREN); }
-<SEQ> ";"  { return symbol(sym.RPAREN); yybegin(YYINITIAL); }
 
 /* SEPARATORS - can be matched in any state. */
 <YYINITIAL> ";" { return symbol(sym.SEMI); }
@@ -146,7 +146,7 @@ StringCont         = [^\r\n\"\\]
     /* String Literal */
 	\"    { yybegin(STRING); string.setLength(0); }
 
-	{Dictionary}             { /*yybegin(DICT);*/ System.out.println("dict found"); return symbol(sym.DICT); }
+	{Dictionary}             { /*yybegin(DICT);*/return symbol(sym.DICT); }
 
 	{Sequence}               { /*yybegin(SEQ);*/ return symbol(sym.SEQ); }
 
@@ -154,11 +154,11 @@ StringCont         = [^\r\n\"\\]
 
 	{Character}              { return symbol(sym.CHARCONST, yytext().charAt(0)); }
 
-	{Integer}                { return symbol(sym.NUM, new Integer(yytext())); }
+	{Integer}                { System.out.println("INT "+yytext()); return symbol(sym.NUM, new Integer(yytext())); }
 
-	{Float}                  { return symbol(sym.NUM, new Float(yytext())); }
+	{Float}                  { System.out.println("FLOAT "+yytext()); return symbol(sym.NUM, new Float(yytext())); }
 	
-	{Rational}               { return symbol(sym.NUM); }
+	{Rational}               { System.out.println("RAT " +yytext()); return symbol(sym.NUM); }
 
 	{Identifier}             { return symbol(sym.ID, new Integer(1)); }
 }

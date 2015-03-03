@@ -29,7 +29,7 @@ parser code {:
     public void syntax_error(Symbol current_token) {
         syntaxErrors = true;
 
-        System.out.println("failed symbol: " + current_token.toString()); // turn OFF when not debugging!!!
+        //System.out.println("failed symbol: " + current_token.toString()); // turn OFF when not debugging!!!
 
         report_error("Syntax error at line " + (current_token.left+1) + ", column "+ current_token.right, null);
     }
@@ -46,9 +46,11 @@ non terminal            expression, arithExpression, boolExpression, concat, inC
 non terminal            statement, moreStatements, statementList, controlFlow;
 non terminal            aggregateType, dictType, seqLiteral, dictLiteral;
 non terminal            keyValPair, keyValPairList, moreKeyPairs, seqValList, moreSeqVals;
-non terminal            alphaBody, alphaDec, debugVarDec, type_or_alias, returnStatement, seqSlicing, functionCall, csExpressions;
+non terminal            alphaBody, alphaDec, debugVarDec, type_or_alias, returnStatement, seqSlicing, functionCall;
+non terminal            csExpressions, csExpressionsNonEmpty;
 
 /* Precedences */
+precedence left COMMA;
 precedence left OR;
 precedence left AND;
 precedence left IMPLIES;
@@ -65,6 +67,8 @@ precedence left DIV;
 precedence left MULT;
 precedence left POW;
 precedence left ID;
+precedence left RPAREN;
+precedence left LPAREN;
 
 
 /* The grammar rules */
@@ -130,13 +134,36 @@ varDec ::= ID COLON type_or_alias varInit SEMI
          ;
 
 varInit ::=
-          | ASSIGN expression               {: System.out.print("(Initialised) ");:}
+          | ASSIGN csExpressionsNonEmpty               {: System.out.print("(Initialised) ");:}
           ;
 
-varAssignment ::= ID ASSIGN expression                                  {: System.out.println("Variable Assignment");:}
-                | ID DOT ID ASSIGN expression                           {: System.out.println("Variable Assignment - Dot");:}
-                | ID LBRACKET expression RBRACKET ASSIGN expression     {: System.out.println("Variable Assignment - SeqIndex");:}
+varAssignment ::= ID ASSIGN csExpressionsNonEmpty                {: System.out.println("Variable Assignment");:}
+                | ID DOT ID ASSIGN csExpressionsNonEmpty         {: System.out.println("Variable Assignment - Dot");:}
+                | ID LBRACKET expression RBRACKET ASSIGN csExpressionsNonEmpty     
+                                                        {: System.out.println("Variable Assignment - SeqIndex");:}
                 ;
+
+expression ::= LPAREN expression RPAREN
+             | ID                   
+             | arithExpression            
+             | boolExpression               
+             | BOOLCONST
+             | CHARCONST                  
+             | NUM                          
+             | STRING
+             | concat
+             | dictLiteral
+             | seqLiteral
+             | seqSlicing   // also used for indexing
+             | functionCall
+             | inCheck
+             | SUBTRACT expression
+             | ID DOT ID
+             ;
+
+csExpressionsNonEmpty ::= expression
+                        | expression COMMA csExpressionsNonEmpty
+                        ;
 
 
 alphaBody ::= alphaDec alphaBody
@@ -177,24 +204,6 @@ controlFlow ::= WHILE LPAREN expression RPAREN DO alphaBody OD
 returnStatement ::= 
                   | expression
                   ;
-
-expression ::= LPAREN expression RPAREN
-             | ID                   
-             | arithExpression            
-             | boolExpression               
-             | BOOLCONST
-             | CHARCONST                  
-             | NUM                          
-             | STRING
-             | concat
-             | dictLiteral
-             | seqLiteral
-             | seqSlicing   // also used for indexing
-             | functionCall
-             | inCheck
-             | SUBTRACT expression
-             | ID DOT ID
-             ;
 
 inCheck ::= expression IN expression
           ;
