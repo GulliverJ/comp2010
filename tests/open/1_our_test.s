@@ -13,9 +13,16 @@ bugSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }, "BUG"];
 #/
 
 ### TEST STARTS HERE...  <-----------------------------------------
-/#
+
+fdef invert(d : dict<int,top>) {
+  t:dict<top,top> := {}; 
+  
+  return t;
+} : dict<top,top>;
+
+
 fdef foo (a:int, b:float) {
-	
+	t:dict<top,top> := {}; 
 	shubham : bool := T;
 	
 	fdef marge(a:int, b:float) { return T; } : int;
@@ -27,7 +34,7 @@ fdef foo (a:int, b:float) {
 };
 
 myFirstInt : int := 9;
-mySecondInt : int := --9;
+mySecondInt : int := -9;
 myRat : rat := 5_3/2;
 nonInit : top;
 myDict : dict<top,top> := { 's' : jack };
@@ -36,7 +43,7 @@ mySeq : seq<top> := [1,2,'A', variable];
 nestedDict : dict<int, top> := { 's' : 2, { 2.532435 : 3 } : jack, 120 : T };
 
 nestedSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }];
-#/
+
 
 main {
 	

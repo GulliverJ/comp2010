@@ -129,15 +129,15 @@ StringCont         = [^\r\n\"\\]
 	"&&"  { return symbol(sym.AND); }
 	"||"  { return symbol(sym.OR); }
 	"!"   { return symbol(sym.NOT); }
-	"len" { return symbol(sym.ID); }
+	//"len" { return symbol(sym.ID); }
 	","	  { return symbol(sym.COMMA); }
 
     /* String Literal */
 	\"    { yybegin(STRING); string.setLength(0); }
 
-	{Dictionary}             { yybegin(DICT); return symbol(sym.DICT); }
+	{Dictionary}             { /*yybegin(DICT);*/ System.out.println("dict found"); return symbol(sym.DICT); }
 
-	{Sequence}               { yybegin(SEQ); return symbol(sym.SEQ); }
+	{Sequence}               { /*yybegin(SEQ);*/ return symbol(sym.SEQ); }
 
 	{BooleanConstant}        { return symbol(sym.BOOLCONST, yytext().charAt(0)); }
 
