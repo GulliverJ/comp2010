@@ -2,7 +2,7 @@
 // Group 10
 // Coursework 1
 
-// Version 0.5 - Synchronizing files
+// Version 0.6 - The most recent change!
 
 
 /* NEEDED FOR PARSER INTERFACING */
@@ -144,7 +144,7 @@ StringCont         = [^\r\n\"\\]
 	 * potentially something to look at. */
 	"="   { System.out.print("EQ ");      }
 	"!="  { System.out.print("NOTEQ");    }
-	"<"   { System.out.print("LTHAN ");   }
+	"<"   { System.out.print("LANGLE ");   }
 	"<="  { System.out.print("LTEQ ");    }
 	">"   { System.out.print("GTHAN ");   }
 	">="  { System.out.print("GTEQ");     }
