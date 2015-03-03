@@ -11,8 +11,6 @@ main {
   tmp:string;
 
   while (i<len(books)) do 
-     ed_macbook[2] := 5;
-	 gulliver.cake := T;
      tmp := books[i];
      if (key in tmp) then found := T; 
      else fi
