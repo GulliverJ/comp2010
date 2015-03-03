@@ -18,8 +18,4 @@ main {
   f.children := f.children :: [c3];
 
   return;
-};
-
-fdef bar() {
-  print "Another function after main.";
-};
+}

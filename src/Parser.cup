@@ -37,7 +37,7 @@ parser code {:
 :};
 
 
-terminal PLUS, SEMI, CHAR, CHARCONST, BOOL, INT, RAT, FLOAT, TOP, PRINT, READ, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, TDEF, ALIAS, STRING, ERROR;
+terminal PLUS, SEMI, CHAR, CHARCONST, BOOL, INT, RAT, FLOAT, TOP, PRINT, READ, THEN, ELSE, IF, FI, WHILE, DO, OD, FORALL, IN, RETURN, DIV, MULT, SUBTRACT, ASSIGN, EQ, NOTEQ, AND, OR, COLON, LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET, FDEF, MAIN, DICT, SEQ, BOOLCONST, NUM, ID, LANGLE, COMMA, RANGLE, POW, NOT, LTEQ, CONCAT, IMPLIES, TDEF, ALIAS, STRING, DOT, ERROR;
 
 /* Non terminals */
 non terminal            S, decList, dec, funcDef, main, params, moreParams, returnType, type;
@@ -133,7 +133,9 @@ varInit ::=
           | ASSIGN expression               {: System.out.print("(Initialised) ");:}
           ;
 
-varAssignment ::= ID ASSIGN expression      {: System.out.println("Variable Assignment");:}
+varAssignment ::= ID ASSIGN expression                                  {: System.out.println("Variable Assignment");:}
+                | ID DOT ID ASSIGN expression                           {: System.out.println("Variable Assignment - Dot");:}
+                | ID LBRACKET expression RBRACKET ASSIGN expression     {: System.out.println("Variable Assignment - SeqIndex");:}
                 ;
 
 
@@ -162,7 +164,7 @@ statement ::= varAssignment SEMI
             | controlFlow    
             | functionCall SEMI
             | READ ID SEMI
-            | PRINT expression SEMI                       
+            | PRINT expression SEMI          
             ;
 
 controlFlow ::= WHILE LPAREN expression RPAREN DO alphaBody OD
@@ -191,6 +193,7 @@ expression ::= LPAREN expression RPAREN
              | functionCall
              | inCheck
              | SUBTRACT expression
+             | ID DOT ID
              ;
 
 inCheck ::= expression IN expression

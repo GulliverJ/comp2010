@@ -16,7 +16,6 @@ bugSeq : seq<top> := ['s', 124324, 1.234, jack, [1,2,3], { 'a' : 1 }, "BUG"];
 
 fdef invert(d : dict<int,top>) {
   t:dict<top,top> := {}; 
-  
   return t;
 } : dict<top,top>;
 
