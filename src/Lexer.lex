@@ -40,8 +40,8 @@ import java_cup.runtime.*;
 /* REGULAR EXPRESSIONS */
 LineTerminator   = \r|\n|\r\n
 WhiteSpace       = {LineTerminator} | [ \t\f]
-Integer          = [-]* 0 | [-]* [1-9][0-9]*								// Added -* here to match, e.g. ----9
-Float            = (0|-*[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
+Integer          = 0 | [1-9][0-9]*						// Added -* here to match, e.g. ----9
+Float            = (0|[1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
 Rational         = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[0-9]+
 BooleanConstant  = "T" | "F"
 Character        = "'" . "'"    // Altered from "'" [A-Z] "'" | "'" [a-z] "'" to include '0' ' ' etc.
