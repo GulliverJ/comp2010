@@ -45,9 +45,9 @@
 LineTerminator     = \r|\n|\r\n
 WhiteSpace         = {LineTerminator} | [ \t\f]
 
-Integer          = 0 | [1-9][0-9]*								// Added -* here to match, e.g. ----9
-Float            = (0| [1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
-Rational           = [1-9]* "/" [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [+-]?[0-9]*
+Integer            = 0 | [1-9][0-9]*								// Added -* here to match, e.g. ----9
+Float              = (0| [1-9][0-9]*)("."[0-9]+)				        //TODO - add "f" ending for float?
+Rational           = [1-9]* " "* "/" " "* [1-9]* | [1-9]* "_" [1-9]* "/" [1-9]* | 0 | [1-9][0-9]*
 BooleanConstant    = "T" | "F"
 Character          = "'" [A-Z] "'" | "'" [a-z] "'" | '0' | "'" [+-]?[1-9][0-9]* "'"
 
@@ -68,6 +68,10 @@ StringCont         = [^\r\n\"\\]
 //State for handling dictionaries
 %state DICT
 
+%state DICTSEQ
+
+%state SEQSTRING
+
 //State for handling strings (seq<char>)
 %state STRING, TDEF, FDEF
 
@@ -77,12 +81,12 @@ StringCont         = [^\r\n\"\\]
 /* LEXICAL RULES */
 
 /* KEYWORDS */
-"char "    { System.out.print("CHAR ");     }
-"bool "    { System.out.print("BOOL ");     }
-"int "     { System.out.print("INT ");      }
-"rat "     { System.out.print("RAT ");      }
-"float "   { System.out.print("FLOAT ");    }
-"top "     { System.out.print("TOP ");      }
+"char"    { System.out.print("CHAR ");     }
+"bool"    { System.out.print("BOOL ");     }
+"int"     { System.out.print("INT ");      }
+"rat"     { System.out.print("RAT ");      }
+"float"   { System.out.print("FLOAT ");    }
+"top"     { System.out.print("TOP ");      }
 <YYINITIAL> "print"   { System.out.print("PRINT ");    }
 <YYINITIAL> "alias"   { System.out.print("ALIAS ");    }
 <YYINITIAL> "fdef"    { System.out.print("FUNCTION "); }
@@ -104,8 +108,9 @@ StringCont         = [^\r\n\"\\]
 
 //Overides the colon's and semi colon's normal meaning of 
 //"TYPE" when in the DICT or SEQstate.
-<DICT> ":" { System.out.print("MAPSTO ");                    }
-<DICT> ";" { System.out.print("SEMI\n"); yybegin(YYINITIAL); }
+<DICTSEQ> ":" { System.out.print("MAPSTO ");                      }
+<DICTSEQ> ";" { System.out.print("SEMI\n"); yybegin(YYINITIAL);   }
+<DICTSEQ> ")" { System.out.print("RPAREN " ); yybegin(YYINITIAL); }
 <SEQ> ";"  { System.out.print("SEMI\n"); yybegin(YYINITIAL); }
 
 /* SEPARATORS - can be matched in any state. */
@@ -116,6 +121,16 @@ StringCont         = [^\r\n\"\\]
 ":"	{ System.out.print("TYPE ");     }
 "(" { System.out.print("LPAREN ");   }
 ")" { System.out.print("RPAREN ");   }
+"," { System.out.print("COMMA ");  }
+
+/* OPERATORS */
+":="  { System.out.print("ASSIGN ");  }
+"::"  { System.out.print("CONCAT ");  }
+"/"   { System.out.print("DIVIDE "); }
+"*"   { System.out.print("TIMES ");  }
+"-"   { System.out.print("MINUS ");  }
+"+"   { System.out.print("PLUS ");   }
+"^"   { System.out.print("POW ");    }
 
 /* HANDLING WHITESPACE AND COMMENTS - apply to any state. */
 {WhiteSpace} { /* IGNORE WHITESPACE */ }
@@ -126,15 +141,7 @@ StringCont         = [^\r\n\"\\]
 
 	/* OPERATORS - Probably could be declared outside this state - 
 	 * potentially something to look at. */
-	"/"   { System.out.print("DIVIDE "); }
-	"*"   { System.out.print("TIMES ");  }
-	"-"   { System.out.print("MINUS ");  }
-	"+"   { System.out.print("PLUS ");   }
-	"^"   { System.out.print("POW ");    }
-
-	":="  { System.out.print("ASSIGN ");  }
 	"="   { System.out.print("EQ ");      }
-	"::"  { System.out.print("CONCAT ");  }
 	"!="  { System.out.print("NOTEQ");    }
 	"<"   { System.out.print("LTHAN ");   }
 	"<="  { System.out.print("LTEQ ");    }
@@ -144,6 +151,7 @@ StringCont         = [^\r\n\"\\]
 	"||"  { System.out.print("OR ");      }
 	"!"   { System.out.print("NOT ");     }
 	"=>"  { System.out.print("IMPLIES "); }
+	"."   { System.out.print("DOT ");     }
 
 	//This particular separator is not state independant.
 	";"   { System.out.print("SEMI\n");    }
@@ -154,10 +162,10 @@ StringCont         = [^\r\n\"\\]
 	\"    { yybegin(STRING); string.setLength(0); }
 
 	/* Deal with Dictionaries */
-	{Dictionary}             { System.out.print("DICT "); yybegin(DICT); }
+	{Dictionary}             { System.out.print("DICT "); yybegin(DICTSEQ); }
 
 	/* Deal with Sequences */
-	{Sequence}               { System.out.print("SEQ "); yybegin(SEQ); }
+	{Sequence}               { System.out.print("SEQ "); yybegin(DICTSEQ); }
 
 	/* Deal with individual type inputs */
 	{BooleanConstant}        { System.out.print("BOOLCONST(" + yytext() + ") ");   }
@@ -171,7 +179,7 @@ StringCont         = [^\r\n\"\\]
 	{Float}                  { System.out.print("NUM(" + yytext() + ") "); }
 
 	//Cannot handle rationals - just prints whitespace for some reason.
-	//{Rational}             { System.out.print(yytext() + " "); }
+	{Rational}             { System.out.print("NUM(" + yytext() + ") "); }
 
 	//Use this when actually returning an identifier. 
 	//return symbol(sym.ID, new Integer(1));
@@ -195,16 +203,37 @@ StringCont         = [^\r\n\"\\]
     "\\\\"                   { string.append( '\\' ); }
 }
 
+<SEQSTRING> {
+
+							//yybegin(YYINITIAL); return symbol(SEQ<CHAR>, string.toString());
+    \"                       { yybegin(DICTSEQ); System.out.print(string.toString() + " "); } //Maybe return SEQ<char> rather than the string itself.
+
+	{StringCont}+            { string.append(yytext()); }
+
+	"\\b"                    { string.append( '\b' ); }
+    "\\t"                    { string.append( '\t' ); }
+    "\\n"                    { string.append( '\n' ); }
+    "\\f"                    { string.append( '\f' ); }
+    "\\r"                    { string.append( '\r' ); }
+    "\\\""                   { string.append( '\"' ); }
+    "\\'"                    { string.append( '\'' ); }
+    "\\\\"                   { string.append( '\\' ); }
+}
+
 /* LEXICAL STATE TO HANDLE SEQUENCES */
-<SEQ> {
+<DICTSEQ> {
 
 	//Deal with operators. Assignment may be ableindependant of any state.
-	":="              { System.out.print("ASSIGN "); }
-	"<"               { System.out.print("LANGLE "); }
-	">"               { System.out.print("RANGLE "); }
-	","               { System.out.print("COMMA ");  }
+	"<"               { System.out.print("LANGLE ");   }
+	">"               { System.out.print("RANGLE ");   }
+
+	//"rat"             { System.out.print("RAT "); yybegin(SEQRATIONAL); }
+
+	\"                { yybegin(SEQSTRING); string.setLength(0); }
 
 	{Sequence}        { System.out.print("SEQ ");    }
+
+	{Dictionary}      { System.out.print("DICT "); }
 
 	//Handle all possible contents of the sequence.
 	{Float}           { System.out.print("NUM(" + yytext() + ") ");               }
@@ -218,32 +247,6 @@ StringCont         = [^\r\n\"\\]
     {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");         }
 
     {Identifier}      { System.out.print("ID(" + yytext() + ") ");                }
-
-}
-
-/* LEXICAL STATE TO HANDLE DICTIONARIES */
-<DICT> {
-
-	//Deal with operators. Assignment may be ableindependant of any state.
-	":="              { System.out.print("ASSIGN "); }
-	"<"               { System.out.print("LANGLE "); }
-	">"               { System.out.print("RANGLE "); }
-    ","               { System.out.print("COMMA ");  }
-
-    {Dictionary}      { System.out.print("DICT "); }
-
-    //Deal with all possible contents of the dictionary.
-	{Float}           { System.out.print("NUM(" + yytext() + ") ");                }
-
-	{Rational}        { System.out.print("NUM(" + yytext() + ") ");                }
-
-	{Character}       { System.out.print("CHAR(" + yytext() + ") ");               }
-
-	{Integer}         { System.out.print("NUM(" + yytext() + ") ");                }
-
-    {BooleanConstant} { System.out.print("BOOLCONST(" + yytext() + ") ");          }
-
-    {Identifier}      { System.out.print("ID(" + yytext() + ") "); }
 
 }
 
