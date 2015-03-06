@@ -21,4 +21,4 @@ fdef alice () {
   return 5;
 } : int;
 
-main { print "fred"; };
+

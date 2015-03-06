@@ -77,7 +77,7 @@ StringCont         = [^\r\n\"\\]
 /* Keywords */
 "char"                { return symbol(sym.CHAR); }
 "bool"                { return symbol(sym.BOOL); }
-"int"                 { System.out.println("INT found"); return symbol(sym.INT); }
+"int"                 { return symbol(sym.INT); }
 "rat"                 { return symbol(sym.RAT); }
 "float"               { return symbol(sym.FLOAT); }
 "top"                 { return symbol(sym.TOP); }
@@ -104,6 +104,8 @@ StringCont         = [^\r\n\"\\]
 //"TYPE" when in the DICT or SEQstate.
 <DICTSEQ> ";" { yybegin(YYINITIAL); return symbol(sym.SEMI);   }
 <DICTSEQ> ")" { yybegin(YYINITIAL); return symbol(sym.RPAREN); }
+
+<STRING>  {LineTerminator}  { return symbol(sym.ERROR); }
 
 /* SEPARATORS - can be matched in any state. */
 <YYINITIAL> ";" { return symbol(sym.SEMI); }
@@ -154,11 +156,11 @@ StringCont         = [^\r\n\"\\]
 
 	{Character}              { return symbol(sym.CHARCONST, yytext().charAt(0)); }
 
-	{Integer}                { System.out.println("INT "+yytext()); return symbol(sym.NUM, new Integer(yytext())); }
+	{Integer}                { return symbol(sym.NUM, new Integer(yytext())); }
 
-	{Float}                  { System.out.println("FLOAT "+yytext()); return symbol(sym.NUM, new Float(yytext())); }
+	{Float}                  { return symbol(sym.NUM, new Float(yytext())); }
 	
-	{Rational}               { System.out.println("RAT " +yytext()); return symbol(sym.NUM); }
+	{Rational}               { return symbol(sym.NUM); }
 
 	{Identifier}             { return symbol(sym.ID, new Integer(1)); }
 }
@@ -182,7 +184,7 @@ StringCont         = [^\r\n\"\\]
 <SEQSTRING> {
 
 							//yybegin(YYINITIAL); return symbol(SEQ<CHAR>, string.toString());
-    \"                       { yybegin(DICTSEQ); System.out.print(string.toString() + " "); } //Maybe return SEQ<char> rather than the string itself.
+    \"                       { yybegin(DICTSEQ); } //Maybe return SEQ<char> rather than the string itself.
 
 	{StringCont}+            { string.append(yytext()); }
 
